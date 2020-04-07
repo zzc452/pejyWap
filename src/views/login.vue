@@ -28,8 +28,8 @@
             ]),
             goLogin(){
                 this.SAVE_USER({name:'jone'})
-                // this.$router.push(this.loginToPath['path']);
-                // this.CLEAR_LOGIN_REDIRECT_PATH('loginToPath');
+                this.$router.push(this.loginToPath['path']);
+                this.CLEAR_LOGIN_REDIRECT_PATH('loginToPath');
                 
             }
         },

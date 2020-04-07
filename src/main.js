@@ -17,8 +17,9 @@ router.beforeEach((to, from, next) => {
     if(store.state.user.userInfo){
       next();
     }else{
-      router.push({ path: '/login',query: { redirect: encodeURI(to.fullPath) }})
-      // store.commit('path/SAVE_LOGIN_REDIRECT_PATH',to)
+      // 用vuex存储跳转信息
+      store.commit('path/SAVE_LOGIN_REDIRECT_PATH',to)
+      router.push({ path: '/login'})
     }
   }else{
     next();
