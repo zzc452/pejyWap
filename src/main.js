@@ -18,7 +18,6 @@ router.beforeEach((to, from, next) => {
       next();
     }else{
       router.push({ path: '/login',query: { redirect: encodeURI(to.fullPath) }})
-      // store.commit('path/SAVE_LOGIN_REDIRECT_PATH',to)
     }
   }else{
     next();

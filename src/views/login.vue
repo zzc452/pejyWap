@@ -4,41 +4,41 @@
 </template>
 
 <script>
-    import { mapState,mapMutations } from 'vuex'
+    import {
+        mapState,
+        mapMutations
+    } from 'vuex'
     export default {
         data() {
-            return {
-            }
+            return {}
         },
-        computed:{
-            
-             ...mapState('user',[
+        computed: {
+            ...mapState('user', [
                 'userInfo'
             ]),
-             ...mapState('path',[
+            ...mapState('path', [
                 'loginToPath'
             ]),
         },
-        methods:{
-            ...mapMutations('user',[
+        methods: {
+            ...mapMutations('user', [
                 'SAVE_USER'
             ]),
-            ...mapMutations('path',[
+            ...mapMutations('path', [
                 'CLEAR_LOGIN_REDIRECT_PATH'
             ]),
-            goLogin(){
-                this.SAVE_USER({name:'jone'})
-                // this.$router.push(this.loginToPath['path']);
-                // this.CLEAR_LOGIN_REDIRECT_PATH('loginToPath');
-                
+            goLogin() {
+                this.SAVE_USER({
+                    name: 'jone'
+                });
+                let path = this.$route.query.redirect ? decodeURI(this.$route.query.redirect) : '/';
+                this.$router.push(path);
             }
         },
         //生命周期 - 创建完成（访问当前this实例）
-        created() {
-        },
+        created() {},
         //生命周期 - 挂载完成（访问DOM元素）
-        mounted() {
-        }
+        mounted() {}
     }
 </script>
 <style scoped>
