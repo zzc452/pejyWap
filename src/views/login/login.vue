@@ -1,3 +1,4 @@
+<!-- 登录 -->
 <template>
     <div id="login-wrap">
         <div class="login-top">
@@ -20,7 +21,7 @@
     import thirdLogin from './com/thirdLogin'
     import QuickLogin from './com/quickLogin'
     import AccountLogin from './com/accountLogin'
-    import { mapState,mapMutations } from 'vuex'
+    import { mapMutations } from 'vuex'
     export default {
         data() {
             return {
@@ -43,16 +44,14 @@
                 return phoneReg.test(mobile);
             },
             loginOperate(res){//登录结果操作
-                if(res.status == 1){
+                if(res.status === 1){
                     this.$toast('登录成功');
                     this.SAVE_USER(res.data.data);
-                    if(res.data.grade == 0){
+                    if(res.data.data.type == 1){
                         this.$router.push('/selectgrade'); //绑定年级
                     }else{
-                        this.$router.push(this.loginToPath);
+                        this.$router.push(decodeURI(this.$store.getters.loginToPath));
                     }
-                }else{
-                    this.$toast(res.message);
                 }
             },
             changeLoginType(){
@@ -75,14 +74,19 @@
                 this.SAVE_BROWSER(this.isWechat);
             },
         },
-        computed:{
-            ...mapState('path',[
-                'loginToPath'
-            ])
-        },
         created(){
             this.whetherEeChat();
         },
+        beforeRouteEnter (to, from, next) {
+            if(to.query.type == 'accountlogin'){
+                next(vm => {
+                    vm.quick_login = false;
+                })
+            }else{
+                next();
+            }
+            
+        }
     }
 </script>
 <style lang="less">

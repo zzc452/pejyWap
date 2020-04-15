@@ -2,30 +2,30 @@
 <!-- 找回密码 -->
 <template>
   <div id="find-password-wrap">
-    <MyHeader :title="'找回密码'" :border="true"></MyHeader>
+    <MyHeader title="找回密码" :border="true"></MyHeader>
     <div class="inner-box">
       <van-form validate-first @submit="resetPassword">
         <div class="input-wrap">
-        <div class="input-box borderBottom">
-          <van-field v-model="mobile" name="mobile" placeholder="请输入手机号" maxlength="11" type="number" />
-        </div>
-        <div class="input-box code-box">
-          <div class="left-area borderBottom">
-            <van-field v-model="code" name="code" placeholder="请输入验证码" maxlength="4" type="number"></van-field>
+          <div class="input-box borderBottom">
+            <van-field v-model="mobile" name="mobile" placeholder="请输入手机号" maxlength="11" type="number" />
           </div>
-          <div class="right-area">
-            <span @click="getCode" v-show="!is_countDown">获取验证码</span>
-            <van-count-down v-show="is_countDown" :auto-start="false" ref="countDown" :time="countdown_time" format="ss 秒" @finish="countDownFinish" />
+          <div class="input-box code-box">
+            <div class="left-area borderBottom">
+              <van-field v-model="code" name="code" placeholder="请输入验证码" maxlength="4" type="number"></van-field>
+            </div>
+            <div class="right-area">
+              <span @click="getCode" v-show="!is_countDown">获取验证码</span>
+              <van-count-down v-show="is_countDown" :auto-start="false" ref="countDown" :time="countdown_time" format="ss 秒" @finish="countDownFinish" />
+            </div>
+          </div>
+          <div class="input-box borderBottom">
+            <van-field v-model="password" name="password" placeholder="请设置您的密码（6-16数字或字母）" maxlength="16" />
+          </div>
+          <div class="input-box borderBottom">
+            <van-field v-model="repassword" name="repassword" placeholder="请再次输入密码" maxlength="16" />
           </div>
         </div>
-        <div class="input-box borderBottom">
-          <van-field v-model="password" name="password" placeholder="请设置您的密码（6-16数字或字母）" maxlength="16" />
-        </div>
-        <div class="input-box borderBottom">
-          <van-field v-model="repassword" name="repassword" placeholder="请输入手机号" maxlength="16" type="number" />
-        </div>
-        </div>
-        <LoginBtn :can_submie="true" :isLogining="this.isLogining"></LoginBtn>
+        <LoginBtn :can_submie="true" :isLogining="this.isLogining" title="确定"></LoginBtn>
       </van-form>
     </div>
   </div>
@@ -40,7 +40,6 @@
     getMobileCode,
     passRepassword
   } from "@/api/login.js";
-
   import LoginBtn from "./com/loginBtn";
   export default {
     data() {
@@ -49,10 +48,11 @@
         code: "",
         password: "",
         repassword: "",
-        scene: 3,
+        scene: 3, //找回密码
         countdown_time: 60 * 1000,
         is_countDown: false,
-        isLogining: false
+        isLogining: false,
+        test: false
       };
     },
     components: {
@@ -62,18 +62,27 @@
       ...mapState("user", ["userInfo"])
     },
     methods: {
+      checkoutPhone() {
+        return /^1[3456789]\d{9}$/.test(this.mobile)
+      },
       getCode() {
-        let phoneReg = /^1[3456789]\d{9}$/;
-        if (!phoneReg.test(this.mobile)) {
+        if (!this.checkoutPhone()) {
           this.$toast("请输入正确手机号");
           return;
         }
         this.is_countDown = true;
         this.$refs.countDown.start();
-        this.toast.loading("获取中...");
-        getMobileCode(this.mobile, this.scene).then(res => {
-          alert("成功");
-          console.log(res);
+        let params = {
+          mobile: this.mobile,
+          scene: this.scene
+        };
+        getMobileCode(params).then(res => {
+          if (res.status !== 1) {
+            this.$toast(res.message);
+          }
+        }).catch(err => {
+          this.$toast('网络错误请稍后重试')
+          throw new Error(err);
         });
       },
       countDownFinish() {
@@ -81,12 +90,64 @@
         this.$refs.countDown.reset();
       },
       resetPassword() {
+        let vm = this;
+        if (!this.checkoutPhone()) {
+          this.$toast("请输入正确手机号");
+          return;
+        }
+        if (this.code.length !== 4) {
+          this.$toast('请输入四位手机验证码')
+          return;
+        }
+        if (this.password.length < 6) {
+          this.$toast("请输入6-16位密码");
+          return;
+        }
+        if (this.repassword.length < 6) {
+          this.$toast("请再次输入6-16位密码");
+          return;
+        }
         this.isLogining = true;
-        passRepassword(this.mobile, this.code, this.password, this.repassword)
-          .then(() => {})
-          .catch(err => {
-            console.log(err);
-          });
+        if (this.test) {
+          this.$toast("重置成功，跳转登录")
+          setTimeout(function() {
+            vm.$router.push({
+              path: 'login',
+              query: {
+                type: 'accountlogin'
+              }
+            })
+          }, 2E3)
+        } else {
+          let params = {
+            mobile: this.mobile,
+            code: this.code,
+            password: this.password,
+            password_confirmation: this.repassword
+          };
+          passRepassword(params)
+            .then((res) => {
+              if (res.status == 1) {
+                this.$toast("重置成功，跳转登录")
+                setTimeout(function() {
+                  vm.$router.push({
+                    path: 'login',
+                    query: {
+                      type: 'accountlogin'
+                    }
+                  })
+                }, 2E3)
+              } else {
+                this.$toast(res.message)
+              }
+            })
+            .catch(err => {
+              this.$toast('网络错误请稍后重试')
+              throw new Error(err)
+            }).finally(function() {
+              vm.isLogining = false;
+            });
+        }
       },
       ...mapMutations("user", ["SAVE_USER"]),
       goLogin() {
@@ -98,11 +159,7 @@
           "/";
         this.$router.push(path);
       }
-    },
-    //生命周期 - 创建完成（访问当前this实例）
-    created() {},
-    //生命周期 - 挂载完成（访问DOM元素）
-    mounted() {}
+    }
   };
 </script>
 <style lang="less">

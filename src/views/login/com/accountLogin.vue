@@ -65,17 +65,18 @@
                     return;
                 }
                 if (!this.$parent.$data.isAgree) {
-                    this.$toast('请同意用户协议')
+                    this.$toast('请勾选用户协议')
                     return;
                 }
                 this.isLogining = true;
                 let params = {
                     mobile: this.mobile,
-                    password: this.password,
+                    password: this.password
                 }
                 accountLogin(params).then(res => {
                     vm.$emit('loginResult', res)
                 }).catch(err => {
+                    this.$toast('网络错误请稍后重试')
                     throw new Error(err)
                 }).finally(function() {
                     vm.isLogining = false;

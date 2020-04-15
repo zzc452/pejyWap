@@ -33,7 +33,8 @@ export default {
                 loginByWxCode(data)
                     .then(res => {
                         // 存用户信息，token
-                        commit('SAVE_USER', res.data.data)
+                        commit('SAVE_USER', res.data.data);
+                        commit('SET_LOGIN_STATUS', 2)
                         resolve(res)
                     })
                     .catch(error => {
@@ -51,8 +52,8 @@ export default {
         },
         // 登出
         fedLogOut({ commit }) {
-            // 删除token，用户信息，登陆状态
             commit('SAVE_USER');
+            commit('SET_LOGIN_STATUS', 0);
         }
     }
 }

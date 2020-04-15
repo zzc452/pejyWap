@@ -1,8 +1,8 @@
 <!-- 登录按钮组件 -->
 <template>
     <div id="login-btn-box">
-        <van-button v-show="!can_submie" block color="#d1d1d1" native-type="button">登录</van-button>
-        <van-button v-show="can_submie" :loading="this.isLogining" loading-text="登录中..." :native-type="this.isLogining ? 'button' : 'submit'" block color="linear-gradient(to right, #ff6900, #de5900)" >登录</van-button>
+        <van-button v-show="!can_submie" block color="#d1d1d1" native-type="button">{{title}}</van-button>
+        <van-button v-show="can_submie" :loading="this.isLogining" :loading-text="titleing" :native-type="this.isLogining ? 'button' : 'submit'" block color="linear-gradient(to right, #ff6900, #de5900)" >{{title}}</van-button>
     </div>
 </template>
 
@@ -16,18 +16,18 @@
             isLogining:{
                 type:Boolean,
                 default:false
+            },
+            title:{
+                type:String,
+                default:'登录'
             }
         },
-        data() {
-            return {
+        computed:{
+            titleing(){
+                return this.title+'中...'
             }
-        },
-        //生命周期 - 创建完成（访问当前this实例）
-        created() {
-        },
-        //生命周期 - 挂载完成（访问DOM元素）
-        mounted() {
         }
+        
     }
 </script>
 <style lang="less">

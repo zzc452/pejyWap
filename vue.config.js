@@ -8,8 +8,11 @@ module.exports = {
         .use('sass-resources-loader')
         .loader('sass-resources-loader')
         .options({
+          // Provide path to the file with resources
+          resources: './src/assets/css/vars.less',
+
           // Or array of paths
-          resources: ['./src/assets/css/default.less']
+          // resources: ['./path/to/vars.scss', './path/to/mixins.scss']
         })
         .end()
     })

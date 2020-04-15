@@ -8,28 +8,33 @@ Vue.prototype.$axios = axios
 
 // 样式
 import '@/assets/css/reset.css'
-import '@/assets/css/default.less'
+import '@/assets/css/vars.less'
 
 Vue.config.productionTip = false
 // 引入第三方
-import Vant, { Toast, Dialog } from 'vant';
+import Vant from 'vant';
 import 'vant/lib/index.css';
+Vue.use(Vant)
+
+import moment from "moment";
+Vue.prototype.$moment = moment;
+
 import wechatAuth from '@/plugins/wechatAuth'
 wechatAuth.setAppId(process.env.VUE_APP_WECHAT_APPID)
 // 自定义组件
 import myHeader from '@/components/myHeader'
+import myButton from '@/components/myButton'
 
-Vue.use(Vant)
-Vue.prototype.$toast = Toast
-Vue.prototype.$dialog = Dialog
+
 
 // 注册全局组件
 Vue.component('MyHeader', myHeader)
+Vue.component('MyButton', myButton)
 
 
 //  登录检测
 router.beforeEach(async(to, from, next) => {
-  let isgoLogin = /^(\/login\/)[^\s]+/.test(to.path);
+  let isgoLogin = /^(\/login)\/?[^\w]*/.test(to.path);
   if (store.getters.token) {
     if (isgoLogin){
       next("/home");
@@ -45,15 +50,14 @@ router.beforeEach(async(to, from, next) => {
             const code = wechatAuth.code
             console.log('code==', code)
             // 通过code换取token
-            // await store.dispatch('user/loginWxAuth', code).then(res=>{
-            //   if(res.data.data.info.mobile==""){//是否要绑定手机
-            //     next();
-            //   }
-            //   if(res.data.data.info.selectgrade==0){//是否要绑定年级
-            //     next('/selectgrade');
-            //   }
-            //   next(`/${store.getters.loginToPath}`)
-            // })
+            // let loginResult = await store.dispatch('user/loginWxAuth', code)
+            // if(loginResult.data.data.info.mobile==""){//是否要绑定手机
+            //   next();
+            // }
+            // if(loginResult.data.data.info.selectgrade==0){//是否要绑定年级
+            //   next('/selectgrade');
+            // }
+            next(`/${store.getters.loginToPath}`)
             await store.dispatch('user/setWxLoginStatus', 2)
             next()
           } catch (err) {
@@ -71,7 +75,7 @@ router.beforeEach(async(to, from, next) => {
   }
 })
 router.afterEach((to)=>{
-  if(to.fullPath == store.getters.loginToPath){
+  if(to.fullPath == decodeURI(store.getters.loginToPath)){
     store.commit('path/CLEAR_LOGIN_REDIRECT_PATH');
   }
 })

@@ -41,10 +41,12 @@
                     this.$toast('请输入正确手机号')
                     return;
                 }
-                this.$router.push('bindphone/code');
+                let vm = this;
                 let params = {mobile:mobile,scene:this.scene};
                 getMobileCode(params).then(res => {
-                    console.log(res)
+                    if(res.status === 1){
+                        vm.$router.push('bindphone/code');
+                    }
                 })
             }
         }

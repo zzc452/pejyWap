@@ -49,7 +49,7 @@
     #public-nav-header{
         .van-nav-bar__title{
             font-size: 18px;
-            color:#000000;
+            color:@txtBlack;
         }
         .van-nav-bar .van-icon{
             color: #494949;

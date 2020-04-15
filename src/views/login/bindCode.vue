@@ -46,6 +46,10 @@
                 }
             },
             getBindCode() {
+                if(!this.mobile){
+                    this.$toast('请重新输入手机号')
+                    return;
+                }
                 this.beginCountDown();
                 this.$parent.bindPhone(this.mobile);
             }

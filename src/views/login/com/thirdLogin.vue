@@ -19,7 +19,7 @@
         },
         methods:{
             async goWxLogin(){
-                wechatAuth.redirect_uri = window.location.href.replace(/^(\/login\/)[^\s]+/,'bindphone');
+                wechatAuth.redirect_uri = window.location.href.replace(/^(\/login)\/?[^\w]+/,'bindphone');
                 await this.setWxLoginStatus(1);
                 window.location.href = wechatAuth.authUrl
             },

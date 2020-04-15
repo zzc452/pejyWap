@@ -6,14 +6,14 @@ const Home = () => import('../views/home/Home'); // 主页
 const videoCourse = () => import('../views/videoCourse/videoCourse'); // 小视频
 const Study = () => import('../views/study/study'); // 我的学习
 const Mine = () => import('../views/mine/mine'); // 个人中心
-const CourseList = () => import('../views/courseList/courseList'); // 课程列表页
-const Course = () => import('../views/course/course'); // 课程二级页
+const CourseList = () => import('../views/course/courseList'); // 课程列表页
+const CourseInner = () => import('../views/course/courseInner'); // 课程二级页
 const Login = () => import('../views/login/login'); // 登录
 const BindPhone = () => import('../views/login/bindPhone'); // 绑定手机
 const BindCode = () => import('../views/login/bindCode'); // 绑定手机 验证码
 const ForgotPassword = () => import('../views/login/forgotPassword'); // 找回密码
-const Agreement = () => import('../views/mine/agreement'); // 找回密码
-const SelectGrade = () => import('../views/mine/selectGrade'); // 找回密码
+const SelectGrade = () => import('../views/login/selectGrade'); // 绑定年级
+const Agreement = () => import('../views/mine/agreement'); // 用户协议
 const Error = () => import('../views/error/error'); // 404
 
 Vue.use(VueRouter)
@@ -54,13 +54,9 @@ const routes = [
       },
       {
         path: 'grade/:level/subject/:kind',
-        name: 'Course',
-        component: Course,
-      }, {
-        path: 'grade/:level/subject/:kind',
-        name: 'Course',
-        component: Course,
-      },
+        name: 'CourseInner',
+        component: CourseInner,
+      }
     ]
   },
   {
@@ -99,8 +95,8 @@ const routes = [
     children: [
       {
         path: 'code',
-        component:BindCode,
-        name:BindCode
+        component: BindCode,
+        name: BindCode
       }
     ]
   },
