@@ -22,8 +22,8 @@
             }
         },
         methods: {
-            selectGrade(id,stage,grade) {
-                this.$emit('passGrade',id,stage,grade)
+            selectGrade(id,subject) {
+                this.$emit('passGrade',id,subject)
             }
         }
     }

@@ -3,7 +3,7 @@
   <div id="course-inner-wrap">
     <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
       <van-list v-model="load_moreing" :finished="load_finished" :finished-text="finished_text" @load="loadMore" :immediate-check="false">
-        <CourseItem :courseItem="course_data" :courseType="course_price"></CourseItem>
+        <CourseItem :courseItem="course_data" :courseType="course_price" v-show="show_course"></CourseItem>
       </van-list>
     </van-pull-refresh>
   </div>
@@ -27,42 +27,49 @@
         refreshing: false,
         course_data: [], //所有课程数据
         current_page: '', //当前页
+        show_course: false
       };
     },
     methods: {
       onRefresh() {
-        this.getCourseData(1,'refresh');
+        this.getCourseData(1, 'refresh');
       },
       loadMore() {
         this.load_moreing = true;
         let page = this.current_page + 1
-        this.getCourseData(page,'loadmore')
+        this.getCourseData(page, 'loadmore')
       },
-      getCourseData(page = 1,type='default') {
-        if(!this.path_subjectId) {
-          this.course_data=[]
-          this.finished_text = '';
+      getCourseData(page = 1, type = 'default') {
+        page = parseInt(page);
+        if (page === 1 && type === 'default') {
+          this.show_course = false
+          this.finished_text = ''
+        }
+        if (!this.path_subjectId) {
+          this.show_course = true;
           this.refreshing = false;
-           return;
+          this.course_data = [];
+          this.$toast("暂无数据")
+          return;
         }
         let params = {
           price: this.course_price,
           attr_id: this.path_subjectId,
           page: page,
-          type:type
+          type: type
         }
         let vm = this
         getCourseList(params).then(res => {
           if (res.status === 1) {
-            if(type == 'refresh'){
+            if (type == 'refresh') {
               this.$toast.success('刷新成功')
             }
-            if(page == 1){
+            if (page === 1) {
               vm.course_data = res.data.data.data;
-              res.data.data.data.length == 0 ? vm.finished_text = '' : vm.finished_text='没有更多了';
-            }else{
+              res.data.data.data.length == 0 ? vm.finished_text = '' : vm.finished_text = '没有更多了';
+            } else {
               vm.course_data.push(...res.data.data.data);
-              vm.finished_text='没有更多了';
+              vm.finished_text = '没有更多了';
             }
             vm.current_page = res.data.data.current_page;
             if (res.data.data.total <= 10 || res.data.data.data.length == 0) {
@@ -73,6 +80,7 @@
           vm.$toast.fail('网络错误，请稍后重试');
           throw new Error(err)
         }).finally(() => {
+          vm.show_course = true;
           vm.refreshing = false;
           vm.load_moreing = false;
         })

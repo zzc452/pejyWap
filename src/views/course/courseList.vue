@@ -7,7 +7,7 @@
         </MyHeader>
         <!-- 课程列表 -->
         <div class="course-list-box">
-            <div class="top-select-box">
+            <div class="top-select-box" v-if="subject_show">
                 <van-sticky offset-top="46">
                     <van-tabs @click="changeSubject" v-model="now_subjectId" color="#5789D2" line-height="2" line-width="32" title-active-color="#5789D2" title-inactive-color="#000000">
                         <van-tab v-for="(value,index) in subjects" :key="index" :title="value.name" :name="value.id"></van-tab>
@@ -43,7 +43,7 @@
                 selected_gradeId: '',    //年级弹框选择的年级id
                 now_gradeName:'',         //当前路由对应的年级
                 all_grades: [],           //年级学科树结构
-                study_stage:[],           //学习阶段index,便于切换年级时获取科目
+                subject_show:true,           //学习阶段index,便于切换年级时获取科目
             }
         },
         methods: {
@@ -66,7 +66,12 @@
                 let level = parseInt(this.path_gradeId)
                 let kind = parseInt(this.path_subjectId)
                 vm.selected_gradeId = level;
-                setTimeout(()=>{vm.now_subjectId = kind},0)
+                if(kind){
+                    this.subject_show = true;
+                    setTimeout(()=>{vm.now_subjectId = kind},0)
+                }else{
+                    this.subject_show = false;
+                }
                 this.all_grades.forEach(function(val){
                     if(val.children){
                         val.children.forEach(function(item){
