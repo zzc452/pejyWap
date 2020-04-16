@@ -6,10 +6,10 @@
         </MyHeader>
         <!-- 课程封面 -->
         <div class="banner-box">
-            <img src="../../../public/img/course_banner.png" alt="">
+            <img :src="course_data.cover_img | formatUrl()" alt="">
         </div>
         <!-- 课程介绍 -->
-        <CourseDetail></CourseDetail>
+        <CourseDetail :courseInfo="course_data"></CourseDetail>
         <div class="under-bar"></div>
         <PastVideo></PastVideo>
         <div class="under-bar"></div>
@@ -33,48 +33,51 @@
             <van-tab :title="tab_nav[2]">
                 <div class="tab-outline-box">
                     <van-cell-group :border="false">
-                        <van-cell>
+                        <van-cell v-for="(val,index) in courseItems" :key="index">
                             <div class="outline-item" slot="title">
                                 <div class="left-area">
                                     第1-2讲
                                 </div>
                                 <div class="middle-area">
-                                    <p>作文写作技巧（二）</p>
-                                    <span>3月26日 18:30-20:30</span>
+                                    <p>{{val.title}}</p>
+                                    <span>{{val.time | formatDate('MM月DD日 hh:mm')}}-{{val.play_time | formatDate('hh:mm')}}</span>
                                 </div>
                                 <div class="right-area">
-                                    <van-button color="#cccccc" size="mini">已结束</van-button>
+                                    <van-button v-if="val.live_status===4" color="#5c8cd3" size="mini">看回放</van-button>
+                                    <span v-else-if="val.live_status===1">未直播</span>
+                                    <van-button v-else-if="val.live_status===2" color="#ff6900" size="mini">直播中</van-button>
+                                    <van-button v-else color="#cccccc" size="mini">回放生成中</van-button>
                                 </div>
                             </div>
                         </van-cell>
-                        <van-cell>
-                            <div class="outline-item" slot="title">
-                                <div class="left-area">
-                                    第1-2讲
+                        <!-- <van-cell>
+                                <div class="outline-item" slot="title">
+                                    <div class="left-area">
+                                        第1-2讲
+                                    </div>
+                                    <div class="middle-area">
+                                        <p>作文写作技巧（二）</p>
+                                        <span>3月26日 18:30-20:30</span>
+                                    </div>
+                                    <div class="right-area">
+                                        <van-button color="#ff6900" size="mini">看回放</van-button>
+                                    </div>
                                 </div>
-                                <div class="middle-area">
-                                    <p>作文写作技巧（二）</p>
-                                    <span>3月26日 18:30-20:30</span>
+                            </van-cell>
+                            <van-cell>
+                                <div class="outline-item" slot="title">
+                                    <div class="left-area">
+                                        第1-2讲
+                                    </div>
+                                    <div class="middle-area">
+                                        <p>作文写作技巧（二）</p>
+                                        <span>3月26日 18:30-20:30</span>
+                                    </div>
+                                    <div class="right-area">
+                                        未开课
+                                    </div>
                                 </div>
-                                <div class="right-area">
-                                    <van-button color="#ff6900" size="mini">看回放</van-button>
-                                </div>
-                            </div>
-                        </van-cell>
-                        <van-cell>
-                            <div class="outline-item" slot="title">
-                                <div class="left-area">
-                                    第1-2讲
-                                </div>
-                                <div class="middle-area">
-                                    <p>作文写作技巧（二）</p>
-                                    <span>3月26日 18:30-20:30</span>
-                                </div>
-                                <div class="right-area">
-                                    未开课
-                                </div>
-                            </div>
-                        </van-cell>
+                            </van-cell> -->
                     </van-cell-group>
                 </div>
             </van-tab>
@@ -89,7 +92,9 @@
 <script>
     import CourseDetail from './com/courseDetail'
     import PastVideo from './com/pastVideo'
-    import { getCourseInfo } from '@/api/course'
+    import {
+        getCourseInfo
+    } from '@/api/course'
     export default {
         name: "CourseInfo",
         components: {
@@ -101,23 +106,35 @@
                 bottom_btnName: '立即购买',
                 active_tab: 0,
                 tab_nav: ['老师', '课程', '大纲'],
-                course_data:{}
+                course_data: {}
             }
         },
-        computed:{
-            courseId(){
-                return this.$route.params.id ? this.$route.params.id :''
+        computed: {
+            courseId() {
+                return this.$route.params.id ? this.$route.params.id : ''
+            },
+            courseItems() {
+                let time = this.course_data.course_item;
+                if (time) {
+                    for (let i = 0; i < time.length; i++) {
+                        time[i].play_time = time[i].play_time * 60 * 1000 + new Date(time[i].time).valueOf()
+                    }
+                    return time;
+                }
+                return []
             }
         },
-        methods:{
-            getInfoData(){
-                if(!this.courseId){
+        methods: {
+            getInfoData() {
+                if (!this.courseId) {
                     this.$toast.error('参数错误');
                     return;
                 }
-                let params = {id:this.courseId}
-                getCourseInfo(params).then(res=>{
-                    if(res.status === 1){
+                let params = {
+                    id: this.courseId
+                }
+                getCourseInfo(params).then(res => {
+                    if (res.status === 1) {
                         this.course_data = res.data.data
                     }
                 })
@@ -192,7 +209,7 @@
                 .g-tit {
                     font-size: 18px;
                     color: #000000;
-                    padding:.4rem 0 .48rem .506667rem;
+                    padding: .4rem 0 .48rem .506667rem;
                 }
                 img {
                     width: 100%;
@@ -200,36 +217,35 @@
             }
             .tab-outline-box {
                 min-height: 100vh;
-                .van-cell{
+                .van-cell {
                     padding: 0 .426667rem 0 .466667rem;
                 }
-                .outline-item{
+                .outline-item {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    padding:.266667rem 0 .24rem;
-                    .left-area{
+                    padding: .266667rem 0 .24rem;
+                    .left-area {
                         flex: 0 0 62px;
                         font-size: 12px;
                         color: @txtGrey;
                     }
-                    .middle-area{
+                    .middle-area {
                         flex: 1 1 auto;
                         color: @txtBlack;
                         line-height: 1.2em;
-                        p{
+                        p {
                             font-size: 13px;
                             margin-bottom: 5px;
-                            
                         }
-                        span{
+                        span {
                             font-size: 12px;
                             color: @txtGrey;
                             vertical-align: top;
                         }
                     }
-                    .right-area{
-                        flex: 0 1 50px;
+                    .right-area {
+                        flex: 0 1 60px;
                         font-size: 13px;
                         color: @txtBlack;
                         text-align: center;

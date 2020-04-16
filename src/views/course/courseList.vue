@@ -20,7 +20,7 @@
         <div class="pop-select-grade">
             <van-dialog v-model="show" title="选择年级" width="90%" confirm-button-color="#FF6900" cancel-button-color="#999999" @confirm="changeGrade" show-cancel-button>
                 <div>
-                    <GradeItem ref="selectGrade" :grades="all_grades" :selectedId="selected_gradeId" @passGrade="SelectedGrade"></GradeItem>
+                    <GradeItem :grades="all_grades" :selectedId="selected_gradeId" @passGrade="SelectedGrade"></GradeItem>
                 </div>
             </van-dialog>
         </div>

@@ -4,15 +4,15 @@
         <div class="row1">
             <div class="price-box">
                 <div class="price">
-                    <strong>免费</strong><span>￥998</span>
+                    <strong>{{courseInfo.price >=0 ?'￥'+courseInfo.price:courseInfo.price}}</strong><span>￥{{courseInfo.underlined_price}}</span>
                 </div>
                 <div class="student">38人已报名</div>
             </div>
-            <h2 class="title">【语文】初中三年级语文冲刺提分班</h2>
+            <h2 class="title">{{courseInfo.title}}</h2>
             <div class="play-time">直播时间：3月28日 15:00-16:00 </div>
             <div class="teacher-box">
                 <div class="teachers">
-                    <div>
+                    <div >
                         <img src="../../../assets/img/teacher.png" alt=""><span>胡亦佳</span>
                     </div>
                 </div>
@@ -20,7 +20,7 @@
             </div>
         </div>
         <van-divider :style="{  borderColor: '#eeeeee' }"></van-divider>
-        <div class="row2 material">是否寄送配套学习资料或学习工具<em>否</em></div>
+        <div class="row2 material">是否寄送配套学习资料或学习工具<em>{{courseInfo.have_materials}}</em></div>
         
     </div>
 </template>
@@ -28,6 +28,11 @@
 <script>
     export default {
         name: "CourseDetail",
+        props:{
+            courseInfo:{
+                type:Object
+            }
+        },
         data() {
             return {}
         }
