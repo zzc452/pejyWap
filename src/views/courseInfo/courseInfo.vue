@@ -24,23 +24,21 @@
             <van-tab :title="tab_nav[1]">
                 <div class="tab-course-box">
                     <h6 class="g-tit">课程详情</h6>
-                    <img src="../../../public/img/course_banner.png" alt="">
-                    <img src="../../../public/img/course_banner.png" alt="">
-                    <img src="../../../public/img/course_banner.png" alt="">
-                    <img src="../../../public/img/course_banner.png" alt="">
+                    <img v-for="(val,index) in course_data.info" :src="val.src" :key="index" alt="">
+                    <!-- <img src="../../../public/img/course_banner.png" alt=""> -->
                 </div>
             </van-tab>
             <van-tab :title="tab_nav[2]">
                 <div class="tab-outline-box">
                     <van-cell-group :border="false">
-                        <van-cell v-for="(val,index) in courseItems" :key="index">
+                        <van-cell v-for="(val,index) in course_data.course_item" :key="index">
                             <div class="outline-item" slot="title">
-                                <div class="left-area">
+                                <!-- <div class="left-area">
                                     第1-2讲
-                                </div>
+                                </div> -->
                                 <div class="middle-area">
                                     <p>{{val.title}}</p>
-                                    <span>{{val.time | formatDate('MM月DD日 hh:mm')}}-{{val.play_time | formatDate('hh:mm')}}</span>
+                                    <span>{{val.time}}</span>
                                 </div>
                                 <div class="right-area">
                                     <van-button v-if="val.live_status===4" color="#5c8cd3" size="mini">看回放</van-button>
@@ -50,34 +48,6 @@
                                 </div>
                             </div>
                         </van-cell>
-                        <!-- <van-cell>
-                                <div class="outline-item" slot="title">
-                                    <div class="left-area">
-                                        第1-2讲
-                                    </div>
-                                    <div class="middle-area">
-                                        <p>作文写作技巧（二）</p>
-                                        <span>3月26日 18:30-20:30</span>
-                                    </div>
-                                    <div class="right-area">
-                                        <van-button color="#ff6900" size="mini">看回放</van-button>
-                                    </div>
-                                </div>
-                            </van-cell>
-                            <van-cell>
-                                <div class="outline-item" slot="title">
-                                    <div class="left-area">
-                                        第1-2讲
-                                    </div>
-                                    <div class="middle-area">
-                                        <p>作文写作技巧（二）</p>
-                                        <span>3月26日 18:30-20:30</span>
-                                    </div>
-                                    <div class="right-area">
-                                        未开课
-                                    </div>
-                                </div>
-                            </van-cell> -->
                     </van-cell-group>
                 </div>
             </van-tab>
@@ -122,7 +92,7 @@
                     return time;
                 }
                 return []
-            }
+            },
         },
         methods: {
             getInfoData() {

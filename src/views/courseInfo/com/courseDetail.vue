@@ -6,22 +6,21 @@
                 <div class="price">
                     <strong>{{courseInfo.price >=0 ?'￥'+courseInfo.price:courseInfo.price}}</strong><span>￥{{courseInfo.underlined_price}}</span>
                 </div>
-                <div class="student">38人已报名</div>
+                <div class="student">{{courseInfo.sales_num}}人已报名</div>
             </div>
             <h2 class="title">{{courseInfo.title}}</h2>
-            <div class="play-time">直播时间：3月28日 15:00-16:00 </div>
+            <div class="play-time">直播时间：{{courseInfo.start_play_friendly}} </div>
             <div class="teacher-box">
                 <div class="teachers">
                     <div >
                         <img src="../../../assets/img/teacher.png" alt=""><span>胡亦佳</span>
                     </div>
                 </div>
-                <div class="rate">8次课共16小时 (已开课剩4次直播)</div>
+                <div class="rate">{{courseInfo.all_num}}次课共{{courseInfo.all_play_time}} (已开课剩{{courseInfo.num}}次直播)</div>
             </div>
         </div>
         <van-divider :style="{  borderColor: '#eeeeee' }"></van-divider>
-        <div class="row2 material">是否寄送配套学习资料或学习工具<em>{{courseInfo.have_materials}}</em></div>
-        
+        <div class="row2 material">是否寄送配套学习资料或学习工具<em>{{courseInfo.have_materials===1?'是':'否'}}</em></div>
     </div>
 </template>
 
