@@ -21,7 +21,7 @@
         </div>
         <van-divider :style="{  borderColor: '#eeeeee' }"></van-divider>
         <div class="row2 material">是否寄送配套学习资料或学习工具<em>否</em></div>
-        <div class="under-bar"></div>
+        
     </div>
 </template>
 
@@ -35,7 +35,7 @@
 </script>
 <style scoped lang="less">
     .course-detail-box {
-        padding-top: .266667rem;
+        padding-top: .373333rem;
         [class^="row"]{
             padding: 0 .426667rem;
         }
@@ -48,7 +48,6 @@
                 strong {
                     font-size: 26px;
                     color: @txtOrange;
-                    
                 }
                 span {
                     font-size: 12px;
@@ -107,9 +106,6 @@
                 color: @txtBlack;
             }
         }
-        .under-bar{
-            height: .266667rem;
-            background:#f5f5f5;
-        }
+        
     }
 </style>

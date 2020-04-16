@@ -35,3 +35,13 @@ export function getCourseList (params) {
     config.params = params;
 	return fetch(config)
 }
+// 获取课程详情
+export function getCourseInfo (params) {
+    let url= '/api/course/info/';
+    url += params.id
+    let config = {
+		url: url,
+		method: 'get',
+	}
+	return fetch(config)
+}

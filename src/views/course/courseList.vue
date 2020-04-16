@@ -7,7 +7,7 @@
         </MyHeader>
         <!-- 课程列表 -->
         <div class="course-list-box">
-            <div class="top-select-box" v-if="subject_show">
+            <div class="top-select-box" v-show="subject_show">
                 <van-sticky offset-top="46">
                     <van-tabs @click="changeSubject" v-model="now_subjectId" color="#5789D2" line-height="2" line-width="32" title-active-color="#5789D2" title-inactive-color="#000000">
                         <van-tab v-for="(value,index) in subjects" :key="index" :title="value.name" :name="value.id"></van-tab>
@@ -20,7 +20,7 @@
         <div class="pop-select-grade">
             <van-dialog v-model="show" title="选择年级" width="90%" confirm-button-color="#FF6900" cancel-button-color="#999999" @confirm="changeGrade" show-cancel-button>
                 <div>
-                    <GradeItem ref="selectGrade" :grades="all_grades" :selectedId = "selected_gradeId" @passGrade="SelectedGrade"></GradeItem>
+                    <GradeItem ref="selectGrade" :grades="all_grades" :selectedId="selected_gradeId" @passGrade="SelectedGrade"></GradeItem>
                 </div>
             </van-dialog>
         </div>
@@ -29,21 +29,23 @@
 
 <script>
     import GradeItem from "./com/gradeItem"
-    import { getCourseSetting } from "@/api/course"
+    import {
+        getCourseSetting
+    } from "@/api/course"
     export default {
-        name:'CourseList',
+        name: 'CourseList',
         components: {
             GradeItem
         },
         data() {
             return {
-                subjects: [],           //当前年级下的所有学科
-                now_subjectId: 0,        //当前路由对应的科目
+                subjects: [], //当前年级下的所有学科
+                now_subjectId: 0, //当前路由对应的科目
                 show: false,
-                selected_gradeId: '',    //年级弹框选择的年级id
-                now_gradeName:'',         //当前路由对应的年级
-                all_grades: [],           //年级学科树结构
-                subject_show:true,           //学习阶段index,便于切换年级时获取科目
+                selected_gradeId: '', //年级弹框选择的年级id
+                selected_subjectId:'', //年级弹框选择的年级id对应第一个科目id
+                now_gradeName: '', //当前路由对应的年级
+                all_grades: [], //年级学科树结构
             }
         },
         methods: {
@@ -54,45 +56,44 @@
                 this.show = true
             },
             changeGrade() { //切换年级
-                if(this.selected_gradeId == this.path_gradeId) return;
-                this.$router.push(`/courselist/${this.course_price}/grade/${this.selected_gradeId}/subject/${this.now_subjectId}`)
+                if (this.selected_gradeId == this.path_gradeId) return;
+                this.$router.push(`/courselist/${this.course_price}/grade/${this.selected_gradeId}/subject/${this.selected_subjectId}`)
             },
-            SelectedGrade(id,subject) { //选择年级
+            SelectedGrade(id, subject) { //选择年级
                 this.selected_gradeId = id;
-                this.now_subjectId = subject ? subject : ''
+                this.selected_subjectId = subject ? subject : ''
             },
-            resetPageInfo(){ //根据路由设置页面信息
+            resetPageInfo() { //根据路由设置页面信息
                 let vm = this;
-                let level = parseInt(this.path_gradeId)
                 let kind = parseInt(this.path_subjectId)
-                vm.selected_gradeId = level;
-                if(kind){
-                    this.subject_show = true;
-                    setTimeout(()=>{vm.now_subjectId = kind},0)
-                }else{
-                    this.subject_show = false;
+                let level = parseInt(this.path_gradeId)
+                setTimeout(() => {
+                    vm.now_subjectId = kind
+                }, 0)
+                vm.now_gradeName="选择年级";
+                if (level ===0 || !!level) {
+                    vm.selected_gradeId = level;
+                    this.all_grades.forEach(function(val) {
+                        if (val.children) {
+                            val.children.forEach(function(item) {
+                                if (item.id === level) {
+                                    vm.now_gradeName = item.name;
+                                    vm.subjects = item.children;
+                                    return;
+                                }
+                            })
+                        }
+                    })
                 }
-                this.all_grades.forEach(function(val){
-                    if(val.children){
-                        val.children.forEach(function(item){
-                            if(item.id == level){
-                                vm.now_gradeName = item.name;
-                                vm.subjects = item.children;
-                                return;
-                            }
-                        })
-                    }
-                })
             },
-            getGrade(){ //获取年级科目树数据
+            getGrade() { //获取年级科目树数据
                 let parms = 'grade_2'
-                getCourseSetting(parms).then(res=>{
-                    if(res.status === 1){
+                getCourseSetting(parms).then(res => {
+                    if (res.status === 1) {
                         this.all_grades = res.data.data;
                         this.resetPageInfo();
                     }
                 })
-                
             }
         },
         computed: {
@@ -102,15 +103,17 @@
             course_price() { //课程类型
                 return this.$route.params.type || '1';
             },
-            path_subjectId(){ //科目类型
+            path_subjectId() { //科目类型
                 return this.$route.params.kind || ''
             },
-            path_gradeId(){ //年级
-                return this.$route.params.level || '1'
+            path_gradeId() { //年级
+                return this.$route.params.level || ''
             },
-            
+            subject_show(){
+                return this.subjects && this.subjects.length>0
+            }
         },
-        created(){
+        created() {
             this.getGrade();
         }
     }
@@ -119,13 +122,13 @@
     @imgUrl: '../../assets/img/';
     #course-list-wrap {
         padding-top: 46px;
-        #public-nav-header .van-nav-bar{
+        #public-nav-header .van-nav-bar {
             z-index: 888;
         }
         .btn-select-grade {
             font-size: 14px;
-            height:46px;
-            line-height:46px;
+            height: 46px;
+            line-height: 46px;
             color: #000000;
             padding-right: 16px;
             background: url("@{imgUrl}icon_selctGrade.png") right center no-repeat;
@@ -134,8 +137,8 @@
         .course-list-box {
             padding: 0 .453333rem;
             .top-select-box {
-                .van-sticky--fixed{
-                    padding:0 0.453333rem;
+                .van-sticky--fixed {
+                    padding: 0 0.453333rem;
                     padding-bottom: 0.24rem;
                     background: #fff;
                 }
@@ -150,6 +153,9 @@
                         &:nth-last-of-type(2) {
                             margin-right: 0;
                         }
+                    }
+                    .van-tab--active {
+                        font-weight: bold;
                     }
                 }
             }

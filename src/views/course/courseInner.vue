@@ -44,11 +44,12 @@
         if (page === 1 && type === 'default') {
           this.show_course = false
           this.finished_text = ''
+          this.course_data = [];
         }
         if (!this.path_subjectId) {
           this.show_course = true;
           this.refreshing = false;
-          this.course_data = [];
+          this.load_finished = true;
           this.$toast("暂无数据")
           return;
         }
@@ -74,6 +75,8 @@
             vm.current_page = res.data.data.current_page;
             if (res.data.data.total <= 10 || res.data.data.data.length == 0) {
               vm.load_finished = true
+            }else{
+              vm.load_finished = false
             }
           }
         }).catch(err => {

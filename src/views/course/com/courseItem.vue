@@ -34,7 +34,7 @@
                         <div v-if="Number(courseType) === 0"><span>{{val.sales_num_base}}人已报名</span>上限{{val.stock+val.sales_num_base}}人</div>
                     </div>
                     <div class="now-price">
-                        <em>￥{{val.underlined_price}}</em>优惠价:<strong>￥{{val.price}}</strong>
+                        <em>￥{{val.underlined_price | roundNum()}}</em>优惠价:<strong>￥{{val.price | roundNum()}}</strong>
                     </div>
                 </div>
             </div>
@@ -61,6 +61,14 @@
             }
         },
         filters: {
+            roundNum(val){
+                if(val.includes('.00')){
+                    return parseInt(val)
+                }else{
+                    return val
+                }
+               
+            },
             btnText(val, pattern) {
                 let txt = '';
                 switch (val) {

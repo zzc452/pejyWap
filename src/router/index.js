@@ -50,7 +50,7 @@ const routes = [
     component: CourseList,
     children: [
       {
-        path: 'grade/:level/subject/:kind?',
+        path: 'grade/:level?/subject/:kind?',
         name: 'CourseInner',
         component: CourseInner,
       },
