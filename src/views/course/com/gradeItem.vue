@@ -4,7 +4,7 @@
         <div class="items-box" v-for="(val,index) in grades" :key="index">
             <h6>{{val.name}}</h6>
             <dl>
-                <dd v-for="(grade,num) in val.children" :class="{'on': grade.id === selectedId}" @click="selectGrade(grade.id,index)" :key="num">{{grade.name}}</dd>
+                <dd v-for="(grade,num) in val.children" :class="{'on': grade.id === selectedId}" @click="selectGrade(grade.id,grade.children && grade.children[0].id)" :key="num">{{grade.name}}</dd>
             </dl>
         </div>
     </div>
@@ -22,8 +22,8 @@
             }
         },
         methods: {
-            selectGrade(val,index) {
-                this.$emit('passGrade',val,index)
+            selectGrade(id,stage,grade) {
+                this.$emit('passGrade',id,stage,grade)
             }
         }
     }

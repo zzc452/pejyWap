@@ -2,8 +2,8 @@
 <template>
   <div id="course-inner-wrap">
     <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-      <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-        <CourseItem :courseItem = "course_item" :courseType="course_price"></CourseItem>
+      <van-list v-model="load_moreing" :finished="load_finished" :finished-text="finished_text" @load="loadMore" :immediate-check="false">
+        <CourseItem :courseItem="course_data" :courseType="course_price"></CourseItem>
       </van-list>
     </van-pull-refresh>
   </div>
@@ -21,49 +21,69 @@
     data() {
       return {
         error: false,
-        loading: false,
-        finished: false,
+        load_moreing: false,
+        load_finished: false,
+        finished_text: '没有更多了',
         refreshing: false,
-        all_courseData:null,      //所有课程数据
-        current_page:'',           //当前页
-        total_page:'',           //总页数
+        course_data: [], //所有课程数据
+        current_page: '', //当前页
       };
     },
     methods: {
       onRefresh() {
-        console.log('刷新')
-        let vm = this;
-        setTimeout(() => {
-          vm.refreshing = false
-        }, 3E3)
+        this.getCourseData(1,'refresh');
       },
-      onLoad() {
-        this.loading = false;
-        console.log('加载')
+      loadMore() {
+        this.load_moreing = true;
+        let page = this.current_page + 1
+        this.getCourseData(page,'loadmore')
       },
-      getCourseData() {
+      getCourseData(page = 1,type='default') {
+        if(!this.path_subjectId) {
+          this.course_data=[]
+          this.finished_text = '';
+          this.refreshing = false;
+           return;
+        }
         let params = {
           price: this.course_price,
-          attr_id: this.path_subjectId
+          attr_id: this.path_subjectId,
+          page: page,
+          type:type
         }
+        let vm = this
         getCourseList(params).then(res => {
-          if(res.status === 1){
-            this.all_courseData = res.data.data;
-            this.current_page = res.data.data.current_page;
-            this.total_page = res.data.data.total;
+          if (res.status === 1) {
+            if(type == 'refresh'){
+              this.$toast.success('刷新成功')
+            }
+            if(page == 1){
+              vm.course_data = res.data.data.data;
+              res.data.data.data.length == 0 ? vm.finished_text = '' : vm.finished_text='没有更多了';
+            }else{
+              vm.course_data.push(...res.data.data.data);
+              vm.finished_text='没有更多了';
+            }
+            vm.current_page = res.data.data.current_page;
+            if (res.data.data.total <= 10 || res.data.data.data.length == 0) {
+              vm.load_finished = true
+            }
           }
+        }).catch(err => {
+          vm.$toast.fail('网络错误，请稍后重试');
+          throw new Error(err)
+        }).finally(() => {
+          vm.refreshing = false;
+          vm.load_moreing = false;
         })
       }
     },
-    computed:{
+    computed: {
       course_price() { //课程类型
-          return this.$route.params.type;
+        return this.$route.params.type;
       },
-      path_subjectId(){ //科目类型
-          return this.$route.params.kind;
-      },
-      course_item(){
-        return this.all_courseData && this.all_courseData.data
+      path_subjectId() { //科目类型
+        return this.$route.params.kind;
       }
     },
     watch: {
@@ -74,7 +94,7 @@
         this.getCourseData();
       }
     },
-    created(){
+    created() {
       this.getCourseData();
     }
   };

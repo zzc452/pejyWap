@@ -23,10 +23,15 @@ export function getCourseSetting (params) {
 }
 // 获取课程列表
 export function getCourseList (params) {
-	return fetch({
+    let config = {
 		url: '/api/course/list',
 		method: 'get',
-		noToken:true,
-		params :params
-	})
+		noToken:true
+	}
+    if(params.type !== 'default'){
+        config.hideloading = true;
+    }
+    delete params.type;
+    config.params = params;
+	return fetch(config)
 }

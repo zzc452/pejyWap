@@ -8,6 +8,7 @@ const Study = () => import('../views/study/study'); // 我的学习
 const Mine = () => import('../views/mine/mine'); // 个人中心
 const CourseList = () => import('../views/course/courseList'); // 课程列表页
 const CourseInner = () => import('../views/course/courseInner'); // 课程二级页
+const CourseInfo = () => import('../views/courseInfo/courseInfo'); // 课程详情页
 const Login = () => import('../views/login/login'); // 登录
 const BindPhone = () => import('../views/login/bindPhone'); // 绑定手机
 const BindCode = () => import('../views/login/bindCode'); // 绑定手机 验证码
@@ -49,15 +50,23 @@ const routes = [
     component: CourseList,
     children: [
       {
-        path: '',
-        redirect: 'grade/1/subject/A2'
-      },
-      {
-        path: 'grade/:level/subject/:kind',
+        path: 'grade/:level/subject/:kind?',
         name: 'CourseInner',
         component: CourseInner,
+      },
+      {
+        path: '*',
+        redirect: '404'
       }
     ]
+  },
+  {
+    path: '/courseinfo/:id',
+    name: 'CourseInfo',
+    component: CourseInfo,
+    // meta: {
+    //   requireLogin: true
+    // },
   },
   {
     path: '/about/:id',

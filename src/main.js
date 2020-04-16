@@ -21,16 +21,18 @@ Vue.prototype.$moment = moment;
 
 import wechatAuth from '@/plugins/wechatAuth'
 wechatAuth.setAppId(process.env.VUE_APP_WECHAT_APPID)
-// 自定义组件
+
+// 注册全局自定义组件
 import myHeader from '@/components/myHeader'
 import myButton from '@/components/myButton'
-
-
-
-// 注册全局组件
 Vue.component('MyHeader', myHeader)
 Vue.component('MyButton', myButton)
 
+// 自定义全局过滤器
+import * as filters from '@/utils/filters.js'
+Object.keys(filters).forEach(key => {
+  Vue.filter(key, filters[key])
+})
 
 //  登录检测
 router.beforeEach(async(to, from, next) => {
