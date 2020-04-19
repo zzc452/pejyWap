@@ -17,8 +17,11 @@
             <van-tab :title="tab_nav[0]">
                 <div class="tab-teacher-box">
                     <h6 class="g-tit">老师介绍</h6>
-                    <img src="../../../public/img/course_banner.png" alt="">
-                    <img src="../../../public/img/course_banner.png" alt="">
+                    <div v-for="(val,index) in course_data.teacher" :key="index">
+                        <img :src="val.avatar | formatUrl()" alt="">
+                        <p>{{val.nickname}}</p>
+                        <span>{{val.intro}}</span>
+                    </div>
                 </div>
             </van-tab>
             <van-tab :title="tab_nav[1]">
@@ -54,7 +57,8 @@
         </van-tabs>
         <div class="bottom-btn-box">
             <van-divider :style="{ borderColor: '#eeeeee' }"></van-divider>
-            <MyButton :title="bottom_btnName"></MyButton>
+            <MyButton v-if="course_data.is_free === 2" title="立即购买"></MyButton>
+            <MyButton v-else title="立即报名"></MyButton>
         </div>
     </div>
 </template>
@@ -73,7 +77,6 @@
         },
         data() {
             return {
-                bottom_btnName: '立即购买',
                 active_tab: 0,
                 tab_nav: ['老师', '课程', '大纲'],
                 course_data: {}
@@ -82,17 +85,7 @@
         computed: {
             courseId() {
                 return this.$route.params.id ? this.$route.params.id : ''
-            },
-            courseItems() {
-                let time = this.course_data.course_item;
-                if (time) {
-                    for (let i = 0; i < time.length; i++) {
-                        time[i].play_time = time[i].play_time * 60 * 1000 + new Date(time[i].time).valueOf()
-                    }
-                    return time;
-                }
-                return []
-            },
+            }
         },
         methods: {
             getInfoData() {

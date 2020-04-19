@@ -25,8 +25,10 @@ wechatAuth.setAppId(process.env.VUE_APP_WECHAT_APPID)
 // 注册全局自定义组件
 import myHeader from '@/components/myHeader'
 import myButton from '@/components/myButton'
+import myMainnav from '@/components/myMainnva'
 Vue.component('MyHeader', myHeader)
 Vue.component('MyButton', myButton)
+Vue.component('MyMainnav', myMainnav)
 
 // 自定义全局过滤器
 import * as filters from '@/utils/filters.js'

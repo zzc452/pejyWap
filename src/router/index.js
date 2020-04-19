@@ -9,6 +9,11 @@ const Mine = () => import('../views/mine/mine'); // 个人中心
 const CourseList = () => import('../views/course/courseList'); // 课程列表页
 const CourseInner = () => import('../views/course/courseInner'); // 课程二级页
 const CourseInfo = () => import('../views/courseInfo/courseInfo'); // 课程详情页
+const Order = () => import('../views/order/order'); // 订单页
+const EditAddress = () => import('../views/order/editAddress'); // 编辑地址
+const SelectAddress = () => import('../views/order/selectAddress'); // 地址列表选择
+const StudyList = () => import('../views/study/studyList'); // 我的学习
+const StudyInner = () => import('../views/study/studyInner'); // 我的学习二级页
 const Login = () => import('../views/login/login'); // 登录
 const BindPhone = () => import('../views/login/bindPhone'); // 绑定手机
 const BindCode = () => import('../views/login/bindCode'); // 绑定手机 验证码
@@ -60,6 +65,7 @@ const routes = [
       }
     ]
   },
+
   {
     path: '/courseinfo/:id',
     name: 'CourseInfo',
@@ -68,6 +74,42 @@ const routes = [
     //   requireLogin: true
     // },
   },
+  {
+    path:'/order/:orderid?',
+    name:'Order',
+    component:Order
+  },
+  {
+    path:'/editaddress/:id?',
+    name:'EditAddress',
+    component:EditAddress
+  },
+  {
+    path:'/selectAddress',
+    name:'SelectAddress',
+    component:SelectAddress
+  },
+  {
+    path:'/studylist',
+    name:'StudyList',
+    component:StudyList,
+    children: [
+      {
+        path: 'studystatus/:status?',
+        name: 'StudyInner',
+        component: StudyInner,
+      },
+      {
+        path: 'studystatus',
+        redirect: 'studystatus/1'
+      },
+      {
+        path: '*',
+        redirect: '404'
+      }
+    ]
+  },
+  
   {
     path: '/about/:id',
     name: 'About',
@@ -125,13 +167,13 @@ const routes = [
     name: 'SelectGrade'
   },
   {
-    path: '404',
+    path: '/404',
     name: 'Error',
     component: Error
   },
   {
     path: '*',
-    name: 'Error',
+    name: '404',
     component: Error
   },
 

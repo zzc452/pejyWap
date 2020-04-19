@@ -4,6 +4,7 @@
     <router-link tag="div" to="/about/123">关于</router-link>
     <img alt="Vue logo" src="@/assets/logo.png">
     <Pic msg="Welcome to Your Vue.js App"/>
+    <MyMainnav></MyMainnav>
   </div>
 </template>
 

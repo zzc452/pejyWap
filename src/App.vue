@@ -19,6 +19,8 @@
     
   };
 </script>
-<style lang="scss">
-
+<style lang="less">
+  #app{
+    background:@bgWhite;
+  }
 </style>

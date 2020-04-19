@@ -1,0 +1,254 @@
+<!-- 编辑地址 -->
+<template>
+    <div id="edit-address-wrap">
+        <MyHeader :title="titTxt" :border="true">
+            <div class="btn-delete" slot="right" v-if="is_edite" @click="deleteAddress(address_id)" >删除</div>
+        </MyHeader>
+        <div class="edit-area">
+            <div class="top-box">
+                <van-field v-model="receiver" label="收货人" placeholder="请填写收货人姓名" />
+                <van-field v-model="mobile" label="联系方式" placeholder="请填写收货人真实的手机号码" />
+                <van-field v-model="area_info" readonly clickable name="area" label="所在地区" placeholder="请选择所在地区" :is-link="true" @click="selectArea" />
+                <van-field v-model="address_info" rows="1" autosize label="详细地址" type="textarea" placeholder="请填写详细地址" />
+            </div>
+            <div class="set-default">
+                <van-field name="switch" label="设置为默认地址">
+                    <template #input>
+                        <van-switch v-model="set_default" active-color="#ff6900" size="26" />
+                    </template>
+                </van-field>
+            </div>
+            <div class="save-button-box">
+                <MyButton title="保存并使用" @click="saveAddress"></MyButton>
+            </div>
+        </div>
+        <van-popup v-model="show_area" position="bottom">
+            <van-picker show-toolbar :columns="areaList" :loading="loading_area" :columns-placeholder="['请选择', '请选择', '请选择']"   @confirm="confirmArea" @cancel="show_area = false"/>
+        </van-popup>
+    </div>
+</template>
+
+<script>
+    import {
+        addAddressData,
+        updateAddressData,
+        deleteAddressData,
+        getThreeArea,
+        getAddressInfo
+    } from "@/api/order"
+    export default {
+        name: "EditeAddress",
+        data() {
+            return {
+                receiver: '',
+                mobile: '',
+                province_id: 16,
+                city_id: 244,
+                district_id: 2701,
+                province_data: [{
+                    text: "请选择"
+                }],
+                city_data: [{
+                    text: "请选择"
+                }],
+                district_data: [{
+                    text: "请选择"
+                }],
+                address_id: '',
+                area_info: '',
+                address_info: '',
+                set_default: false,
+                show_area: false,
+                loading_area: false,
+                is_edite: false //区分修改地址和添加地址
+            }
+        },
+        methods: {
+            selectArea() {
+                this.show_area = true;
+                this.loading_area = false;
+                this.getAreaData(0, 0);
+            },
+            confirmArea() {
+                this.$toast("选择区域")
+            },
+            getAreaData(id = 0, level = 0) {
+                getThreeArea(id).then(res => {
+                    if (res.status === 1) {
+                        this.loading_area = false;
+                        for (let i = 0; i < res.data.area.length; i++) {
+                            res.data.area[i].text = res.data.area[i].name
+                        }
+                        switch (level) {
+                            case 0:// 省
+                                this.province_data = res.data.area
+                                break;
+                            case 1:// 市
+                                this.city_data = res.data.area
+                                break;
+                            case 2:// 区
+                                this.district_data = res.data.area
+                                break;
+                        }
+                    }
+                    return res
+                })
+            },
+            addAddress() {
+                let params = {
+                    receiver: this.receiver,
+                    mobile: this.mobile,
+                    province_id: this.province_id,
+                    city_id: this.city_id,
+                    district_id: this.district_id,
+                    address: this.address_info,
+                    is_default: this.is_default
+                }
+                if(this.is_edite){
+                    params.id = this.address_id;
+                    updateAddressData(params).then(res => {
+                        if (res.status === 1) {
+                            this.$toast.success('修改成功')
+                        }
+                    })
+                }else{
+                    addAddressData(params).then(res => {
+                        if (res.status === 1) {
+                            this.$toast.success('提交成功')
+                        }
+                    })
+                }
+                
+            },
+            saveAddress() {
+                this.addAddress();
+            },
+            deleteAddress(id){
+                this.$dialog.confirm({
+                    message: '确认删除当前地址吗',
+                })
+                .then(() => {
+                    let params = {id:id}
+                    deleteAddressData(params).then(res => {
+                        if (res.status === 1) {
+                            this.$toast.success('删除成功')
+                        }
+                    })
+                })
+                .catch(() => {
+                    alert('7')
+                    return;
+                });    
+            }
+        },
+        computed: {
+            areaList() {
+                return [{
+                    values: this.province_data
+                }, {
+                    values: this.city_data
+                }, {
+                    values: this.district_data
+                }];
+            },
+            is_default() {
+                return this.set_default ? 1 : 2;
+            },
+            isEdite() {
+                return (this.$route.params.id === 0 || !!this.$route.params.id) ? true : false
+            },
+            titTxt(){
+                return (this.$route.params.id === 0 || !!this.$route.params.id) ? "修改收货地址" : "添加收货地址"
+            }
+        },
+        created() {
+            if (this.$route.params.id === 0 || !!this.$route.params.id) {
+                this.is_edite = true
+                let vm = this
+                getAddressInfo(this.$route.params.id).then(res => {
+                    if (res.status === 1) {
+                        this.address_id = res.data.info.id
+                        this.receiver = res.data.info.receiver
+                        this.mobile = res.data.info.mobile
+                        this.area_info = res.data.info.province + res.data.info.city + res.data.info.district;
+                        this.address_info = res.data.info.address
+                        this.set_default = res.data.info.is_default === 1 ? true : false
+                    }
+                }).catch((err) => {
+                    vm.$toast.fail('网络错误，请稍后重试')
+                    throw new Error(err)
+                })
+            } else {
+                this.is_edite = false
+            }
+        },
+        beforeRouteLeave (to,from,next) {
+            this.$dialog.confirm({
+                    message: '收货信息还未保存，确定返回？',
+                })
+                .then(() => {
+                    next();
+                })
+                .catch(() => {
+                    return false;
+                });
+        }
+    }
+</script>
+<style lang="less">
+    #edit-address-wrap {
+        background: #f2f2f2;
+        min-height: 100vh;
+        #public-nav-header {
+            .btn-delete {
+                font-size: 13px;
+                color: #666;
+                cursor: pointer;
+            }
+        }
+        .edit-area {
+            .van-cell {
+                padding: 10px .426667rem 10px .48rem;
+                .van-field__label {
+                    font-size: 13px;
+                    color: #C6C6C6;
+                    width: 78px;
+                }
+                .van-field__control {
+                    font-size: 15px;
+                    color: @txtBlack;
+                    &::-webkit-input-placeholder {
+                        color: #C6C6C6;
+                    }
+                }
+            }
+            .van-cell:not(:last-child)::after {
+                right: .48rem;
+                left: .426667rem;
+            }
+            .top-box {
+                background: @bgWhite;
+                margin-bottom: .693333rem;
+            }
+            .set-default {
+                .van-cell {
+                    align-items: center;
+                    .van-cell__title {
+                        flex: 1 0 auto;
+                        color: #666;
+                        font-size: 15px;
+                    }
+                    .van-cell__value {
+                        flex: 0 1 auto;
+                    }
+                }
+            }
+        }
+        .save-button-box {
+            padding: 1.52rem 0.426667rem 0 0.48rem;
+            button {
+                border-radius: 5px;
+            }
+        }
+    }
+</style>

@@ -12,8 +12,8 @@
             <div class="play-time">直播时间：{{courseInfo.start_play_friendly}} </div>
             <div class="teacher-box">
                 <div class="teachers">
-                    <div >
-                        <img src="../../../assets/img/teacher.png" alt=""><span>胡亦佳</span>
+                    <div v-for="(val,index) in courseInfo.teacher" :key="index">
+                        <img :src="val.avatar | formatUrl()" alt=""><span>{{val.nickname}}</span>
                     </div>
                 </div>
                 <div class="rate">{{courseInfo.all_num}}次课共{{courseInfo.all_play_time}} (已开课剩{{courseInfo.num}}次直播)</div>
@@ -91,6 +91,7 @@
                 img {
                     height: 0.8rem;
                     width: 0.8rem;
+                    border-radius: 0.4rem;
                     display: inline-block;
                     vertical-align: middle;
                     margin-right: .213333rem;

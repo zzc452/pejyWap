@@ -25,7 +25,7 @@ service.interceptors.request.use(
     // 默认携带token
     if (!config.noToken) {
       if (store.getters.token) {
-        config.headers['token'] = store.getters.token
+        config.headers['Authorization'] = store.getters.token
       }
     }
     //   默认是自己服务器api
