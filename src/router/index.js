@@ -15,6 +15,7 @@ const SelectAddress = () => import('../views/order/selectAddress'); // 地址列
 const PayMent = () => import('../views/pay/payment'); // 地址列表选择
 const StudyList = () => import('../views/study/studyList'); // 我的学习
 const StudyInner = () => import('../views/study/studyInner'); // 我的学习二级页
+const accountSet = () => import('../views/mine/accountSet'); // 个人中心账号设置
 const Login = () => import('../views/login/login'); // 登录
 const BindPhone = () => import('../views/login/bindPhone'); // 绑定手机
 const BindCode = () => import('../views/login/bindCode'); // 绑定手机 验证码
@@ -131,25 +132,6 @@ const routes = [
       }
     ]
   },
-  
-  {
-    path: '/about/:id',
-    name: 'About',
-    component: () => import('../views/About.vue'),
-    meta: {
-      requireLogin: true
-    },
-    children: [
-      {
-        path: 'mine/:user',
-        name: 'mine',
-        component: Mine,
-        meta: {
-          requireLogin: true
-        },
-      }
-    ]
-  },
   {
     path: '/login',
     name: 'login',
@@ -187,6 +169,14 @@ const routes = [
     path: '/selectgrade',
     component: SelectGrade,
     name: 'SelectGrade'
+  },
+  {
+    path: '/accountsetting',
+    component: accountSet,
+    name: 'accountSet',
+    meta: {
+      requireLogin: true
+    },
   },
   {
     path: '/404',

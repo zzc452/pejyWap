@@ -2,6 +2,7 @@
 <template>
     <div class="video-course-wrap">
         <h2>小视频课程页面</h2>
+        <MyMainnav></MyMainnav>
     </div>
 </template>
 

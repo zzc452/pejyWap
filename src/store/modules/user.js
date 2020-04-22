@@ -52,7 +52,7 @@ export default {
         },
         // 登出
         fedLogOut({ commit }) {
-            commit('SAVE_USER');
+            commit('CLEAR_USER');
             commit('SET_LOGIN_STATUS', 0);
         }
     }

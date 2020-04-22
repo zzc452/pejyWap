@@ -13,7 +13,6 @@
                     </van-tabs>
                 </van-sticky>
             </div>
-            <van-notice-bar wrapable :scrollable="false">提示：今日有课</van-notice-bar>
             <router-view></router-view>
         </div>
     </div>
@@ -69,14 +68,6 @@
                 }
             }
         }
-        .van-notice-bar{
-            height: 32px;
-            text-align: center;
-            font-size: 13px;
-            color: #6B3A18;
-            padding: 0;
-            background: #fef4eb;
-            justify-content: center;
-        }
+        
     }
 </style>

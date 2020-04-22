@@ -101,11 +101,11 @@
                 })
             }
         },
-        //生命周期 - 创建完成（访问当前this实例）
         created() {
             this.setMonth();
             this.today = new Date();
             this.initCalendar( this.today)
+            this.selectDay(this.today)
         },
         computed:{
             lastMonth(){
