@@ -1,32 +1,75 @@
 <!-- 添加地址组件 -->
 <template>
-    <div class="add-address-box">
-        <div class="left">
-            <img src="../../../assets/img/icon_address.png" alt="">
-        </div>
-        <div class="right">
-            <div  class="goto-add">
-                <h4>添加收货地址</h4>
-                <p>用于邮寄学习资料或学习工具</p>
+    <div>
+        <div class="add-address-box" @click="gotoAdd" v-if="isEpmtyObj(orderAddr)">
+            <div class="left">
+                <img src="../../../assets/img/icon_address.png" alt="">
             </div>
-            <div v-if="false" class="has-default">
-                <p><van-tag color="#ff6900">默认</van-tag>上海上海市闵行区</p>
-                <h4>昌平路686号218室</h4>
-                <p>张某某158****6666</p>
+            <div class="right">
+                <div class="goto-add">
+                    <h4>添加收货地址</h4>
+                    <p>用于邮寄学习资料或学习工具</p>
+                </div>
+            </div>
+        </div>
+        <div class="add-address-box" @click="gotoSelect" v-else>
+            <div class="left">
+                <img src="../../../assets/img/icon_address.png" alt="">
+            </div>
+            <div class="right">
+                <div class="has-default">
+                    <p>
+                        <van-tag color="#ff6900" v-if="orderAddr.is_default == 1">默认</van-tag>{{orderAddr.area?orderAddr.area: orderAddr.province + orderAddr.city + orderAddr.district}}</p>
+                    <h4>{{orderAddr.address}}</h4>
+                    <p>{{orderAddr.receiver}}<em>{{orderAddr.mobile | hideMobile()}}</em></p>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+    import {
+        mapMutations
+    } from 'vuex'
     export default {
+        name: "Address",
+        props: {
+            orderAddr: {
+                type: Object
+            }
+        },
         data() {
             return {}
         },
-        //生命周期 - 创建完成（访问当前this实例）
-        created() {},
-        //生命周期 - 挂载完成（访问DOM元素）
-        mounted() {}
+        methods: {
+            ...mapMutations('path', [
+                'SAVE_ORDER_PATH'
+            ]),
+            gotoAdd() {
+                this.savePath()
+                this.$router.push('/editaddress')
+            },
+            gotoSelect() {
+                this.savePath()
+                this.$router.push('/selectAddress')
+            },
+            savePath() {
+                this.SAVE_ORDER_PATH(this.$route.fullPath)
+            },
+            isEpmtyObj(obj) {
+                for (var key in obj) {
+                    return false;
+                }
+                return true;
+            }
+        },
+        filters:{
+            hideMobile(val){
+                return val.substr(0,3)+"****"+val.substr(7);
+            }
+            
+        }
     }
 </script>
 <style scoped lang="less">
@@ -57,7 +100,7 @@
             padding-right: .32rem;
             background: url("@{imgUrl}icon_addressPointer.png") right center no-repeat;
             background-size: .213333rem auto;
-            flex: 1 0 auto;
+            flex: 1 1 auto;
             .goto-add {
                 h4 {
                     font-size: 16px;
@@ -73,6 +116,12 @@
                 color: @txtBlack;
                 p {
                     font-size: 12px;
+                    .van-tag{
+                        margin-right: 8px;
+                    }
+                    em{
+                        padding-left: 10px;
+                    }
                 }
                 h4 {
                     font-size: 16px;

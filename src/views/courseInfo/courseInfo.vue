@@ -11,7 +11,7 @@
         <!-- 课程介绍 -->
         <CourseDetail :courseInfo="course_data"></CourseDetail>
         <div class="under-bar"></div>
-        <PastVideo></PastVideo>
+        <PastVideo v-if="course_data.is_free === 2"></PastVideo>
         <div class="under-bar"></div>
         <van-tabs v-model="active_tab" scrollspy sticky lazy-render color="#FF6900" line-height="2" line-width="32" title-active-color="#FF6900" title-inactive-color="#000000">
             <van-tab :title="tab_nav[0]">
@@ -57,7 +57,7 @@
         </van-tabs>
         <div class="bottom-btn-box">
             <van-divider :style="{ borderColor: '#eeeeee' }"></van-divider>
-            <MyButton v-if="course_data.is_free === 2" title="立即购买"></MyButton>
+            <MyButton v-if="course_data.is_free === 2" title="立即购买" @click="gotoBuy(course_data.id)"></MyButton>
             <MyButton v-else title="立即报名"></MyButton>
         </div>
     </div>
@@ -101,6 +101,9 @@
                         this.course_data = res.data.data
                     }
                 })
+            },
+            gotoBuy(id){
+                this.$router.push(`/order/${id}`)
             }
         },
         //生命周期 - 创建完成（访问当前this实例）

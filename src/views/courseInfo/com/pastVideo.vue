@@ -1,6 +1,6 @@
 <!-- 往期视频 -->
 <template>
-    <div class="pastvideo-btn-box">
+    <div class="pastvideo-btn-box" @click="playVideo">
         <div></div>
     </div>
 </template>
@@ -9,6 +9,11 @@
     export default {
         data() {
             return {
+            }
+        },
+        methods:{
+            playVideo(){
+                alert('回放生成中')
             }
         }
     }

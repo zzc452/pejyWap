@@ -17,8 +17,7 @@
                 type: Array
             },
             selectedId:{
-                type:Number,
-                default:1
+                type:Number
             }
         },
         methods: {

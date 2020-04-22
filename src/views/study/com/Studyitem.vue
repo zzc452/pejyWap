@@ -1,38 +1,31 @@
 <!-- 学习表付费课组件 -->
 <template>
     <div class="study-item-wrap">
-        <div class="item-box">
+        <div class="item-box" v-for="(val,index) in course" :key="index">
             <div class="tit-box">
-                <h6>【英语】初三年级英语特训营</h6>
-                <p>主讲老师：胡亦佳</p>
+                <h6>{{val.title}}</h6>
+                <p>主讲老师：<span v-for="(tea,num) in val.teacher" :key="num">{{tea.nickname}}</span></p>
             </div>
             <van-divider :style="{ borderColor: '#dddddd', margin: '0px' }" />
             <div class="info-list">
-                <div>
+                <div v-for="(item,n) in val.course_item" :key="n">
                     <div class="info-box">
                         <div class="left">
-                            <h6>作文写作技巧（一）</h6>
-                            <p>3月22日 19:30-20:30</p>
-                        </div>
-                        <div class="right"><i>未开课</i></div>
-                    </div>
-                    <van-divider :style="{ borderColor: '#dddddd', margin: '0px' }" />
-                </div>
-                <div>
-                    <div class="info-box">
-                        <div class="left">
-                            <h6>作文写作技巧（二）</h6>
-                            <p>3月22日 19:30-20:30</p>
+                            <h6>{{item.title}}</h6>
+                            <p>{{item.time}}</p>
                         </div>
                         <div class="right">
-                            <em></em>
-                            <span class="bg-blue">观看回放</span>
+                            <em v-if="item.live_status ===2"></em>
+                            <i v-if="item.live_status ===1">未开课</i>
+                            <span v-else-if="item.live_status ===2" class="bg-orange">进入课堂</span>
+                            <span v-else-if="item.live_status ===3" class="bg-grey">回放生成中</span>
+                            <span v-else class="bg-blue">观看回放</span>
                         </div>
                     </div>
                     <van-divider :style="{ borderColor: '#dddddd', margin: '0px' }" />
                 </div>
             </div>
-            <div class="footer-box">
+            <div class="footer-box" v-if="val.course_item>2 && course.length>1">
                 展开<i></i>
             </div>
         </div>
@@ -42,6 +35,11 @@
 <script>
     export default {
         name: "StudyItem",
+        props:{
+            course:{
+                type:Array
+            }
+        },
         data() {
             return {}
         },
@@ -62,11 +60,14 @@
             .tit-box {
                 font-size: 12px;
                 color: @txtGrey;
-                padding: .373333rem 0;
+                padding: .373333rem 0 .32rem;
                 h6 {
                     font-size: 16px;
                     color: @txtBlack;
                     margin-bottom: 4px;
+                }
+                p span{
+                    padding-right:4px;
                 }
             }
             .info-box {
@@ -79,6 +80,8 @@
                 .left h6 {
                     color: @txtBlack;
                     font-size: 12px;
+                    font-weight: normal;
+                    margin-bottom: 2px;
                 }
                 .right {
                     flex: 1 0 90px;

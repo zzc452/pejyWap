@@ -42,7 +42,7 @@
                 subjects: [], //当前年级下的所有学科
                 now_subjectId: 0, //当前路由对应的科目
                 show: false,
-                selected_gradeId: '', //年级弹框选择的年级id
+                selected_gradeId: 0, //年级弹框选择的年级id
                 selected_subjectId:'', //年级弹框选择的年级id对应第一个科目id
                 now_gradeName: '', //当前路由对应的年级
                 all_grades: [], //年级学科树结构

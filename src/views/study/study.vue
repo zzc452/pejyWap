@@ -5,19 +5,19 @@
         <div class="calendar-box">
             <div class="calendar-title-box">
                <div class="left-box" @click="setLastMonth">{{lastMonth | formatMonth()}}</div>
-               <div class="middle-box">{{curront_month | formatMonth()}}</div>
+               <div class="middle-box">{{current_month | formatMonth()}}</div>
                <div class="right-box" @click="setNextMonth">{{nextMonth | formatMonth()}}</div>
             </div>
-            <van-calendar row-height="42" :default-date="today" :min-date="minDate" :maxDate="maxDate" :show-confirm="false" :poppable="false" :show-title="false" :show-subtitle="false" :show-mark="false" @confirm="selectDay" :formatter="formatter">
+            <van-calendar row-height="42" :default-date="today" :min-date="minDate" :maxDate="maxDate" :show-confirm="false" :poppable="false" :show-title="false" :show-subtitle="false" :show-mark="false" @select="selectDay" :formatter="formatter">
             </van-calendar>
         </div>
         <div class="course-block-box">
-            <CourseBlock></CourseBlock>
+            <CourseBlock :course_data="course_info"></CourseBlock>
         </div>
         <div class="bottom-btn-box">
             <van-divider :style="{ borderColor: '#dddddd', margin: '0px' }" />
-            <van-button size="small" to="/studylist" color="linear-gradient(to right,#ee5f62,#e61f24)">免费直播课程</van-button>
-            <van-button size="small" to="/studylist" color="linear-gradient(to right,#ff9a57,#ff6901)">购买过的课程</van-button>
+            <van-button size="small" to="studylist/1/studystatus/2" color="linear-gradient(to right,#ee5f62,#e61f24)">免费直播课程</van-button>
+            <van-button size="small" to="studylist/2/studystatus/2" color="linear-gradient(to right,#ff9a57,#ff6901)">购买过的课程</van-button>
         </div>
         <MyMainnav></MyMainnav>
     </div>
@@ -25,60 +25,94 @@
 
 <script>
     import CourseBlock from "./com/courseBlock"
+    import { getCalendar,getDayCourse } from "@/api/study"
     export default {
+        name:"Stydy",
         components:{
             CourseBlock
         },
         data() {
             return {
                 today:'',
-                day:[1,2,3,4,5,16],
+                course_days:[],
+                course_info:[],
                 minDate: '', //日历起始日期
                 maxDate: '', //日历终止日期
-                curront_month: new Date().getMonth(),
-                curront_year: new Date().getFullYear(),
+                current_month: new Date().getMonth(),
+                current_year: new Date().getFullYear(),
             }
         },
         methods: {
-            setMonth(mon = this.curront_month,year = this.curront_year ) { //渲染选中的月份
+            setMonth(mon = this.current_month,year = this.current_year ) { //渲染选中的月份
                 let lastDay = new Date(year, mon + 1, 0).getDate()
                 this.minDate = new Date(year, mon, 1)
                 this.maxDate = new Date(year, mon, lastDay)
-                this.curront_month = mon
-                this.curront_year = year;
+                this.current_month = mon
+                this.current_year = year;
             },
             formatter(day) { //遍历日历
-                const date = day.date.getDate();
-                if(this.day.indexOf(date)!== -1){
-                    day.bottomInfo  = '课';
+                let date = this.$moment(day.date).format('YYYY-MM-DD')
+                if(this.course_days.indexOf(date)!== -1){
+                    day.bottomInfo  = 1;
+                    
                 }
+                // if(date === this.$moment().format('YYYY-MM-DD')){
+                //     day.className = 'today'
+                // }
                 return day;
             },
             setLastMonth(){ //上一月
-                let mon = this.curront_month-1<0? this.curront_month-1+12 :this.curront_month-1
-                let year = this.curront_month-1<0 ?this.curront_year-1:this.curront_year
+                let mon = this.current_month-1<0? this.current_month-1+12 :this.current_month-1
+                let year = this.current_month-1<0 ?this.current_year-1:this.current_year
                 this.setMonth(mon,year)
+                let day = new Date(year, mon, 1)
+                this.initCalendar(day)
             },
             setNextMonth(){ //下一月
-                let mon = this.curront_month+1>11? this.curront_month+1-12 :this.curront_month+1
-                let year = this.curront_month+1>11 ?this.curront_year+1:this.curront_year
-                this.setMonth(mon,year)
+                let mon = this.current_month+1>11? this.current_month+1-12 :this.current_month+1
+                let year = this.current_month+1>11 ?this.current_year+1:this.current_year
+                this.setMonth(mon,year);
+                let day = new Date(year, mon, 1)
+                this.initCalendar(day)
             },
-            selectDay(val) { 
-                alert(val)
+            selectDay(val) {
+                let day = this.$moment(val).format('YYYY-MM-DD')
+                if(this.course_days.indexOf(day)== -1){
+                    this.course_info = []
+                    return;
+                }
+                let params={
+                    day:day
+                }
+                getDayCourse(params).then(res=>{
+                    if(res.status === 1){
+                        this.course_info = res.data.data
+                    }
+                })
+            },
+            initCalendar(day){
+                let params = {
+                    day:this.$moment(day).format('YYYY-MM-DD')
+                }
+                getCalendar(params).then(res=>{
+                    if(res.status === 1){
+                        this.course_days = res.data.data
+                    }
+                })
             }
         },
         //生命周期 - 创建完成（访问当前this实例）
         created() {
             this.setMonth();
             this.today = new Date();
+            this.initCalendar( this.today)
         },
         computed:{
             lastMonth(){
-                return this.curront_month -1
+                return this.current_month -1
             },
             nextMonth(){
-                return this.curront_month +1
+                return this.current_month +1
             }
         },
         filters:{
@@ -97,11 +131,10 @@
 </script>
 <style lang="less">
     @imgUrl: '../../assets/img/';
-    @pageBg: #f1f1f1;
     #page-study {
         min-height: 100vh;
         box-sizing: border-box;
-        background: @pageBg;
+        background: @bg2Grey;
         padding-bottom: 108px;
         #public-nav-header {
             .van-nav-bar {
@@ -112,12 +145,12 @@
             }
         }
         .calendar-box{
-            padding-bottom: .533333rem;
+            padding-bottom: .613333rem;
              background: @bgWhite;
             .calendar-title-box{
                 height: 30px;
                 line-height: 31px;
-                padding: .506667rem 15px;
+                padding: .373333rem 15px;
                 display: flex;
                 justify-content: space-between;
                
@@ -127,6 +160,7 @@
                     background-size: auto 13px;
                     font-size: 14px;
                     color: @txtGrey;
+                    cursor: pointer;
                 }
                 .right-box{
                     padding-right: 14px;
@@ -134,6 +168,7 @@
                     background-size: auto 13px;
                     font-size: 14px;
                     color: @txtGrey;
+                    cursor: pointer;
                 }
                 .middle-box{
                     font-size: 20px;
@@ -163,10 +198,11 @@
         .course-block-box{
             border-radius: .426667rem .426667rem 0 0;
             padding: .4rem .333333rem .48rem;
-            background: @pageBg;
+            background: @bg2Grey;
             margin-top: -.533333rem;
         }
         .bottom-btn-box{
+            background: @bg2Grey;
             position: fixed;
             bottom: 55px;
             width: 100%;

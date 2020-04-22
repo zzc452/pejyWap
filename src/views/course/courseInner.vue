@@ -62,6 +62,7 @@
         let vm = this
         getCourseList(params).then(res => {
           if (res.status === 1) {
+            vm.current_page = res.data.data.current_page;
             if (type == 'refresh') {
               this.$toast.success('刷新成功')
             }
@@ -72,10 +73,9 @@
               vm.course_data.push(...res.data.data.data);
               vm.finished_text = '没有更多了';
             }
-            vm.current_page = res.data.data.current_page;
-            if (res.data.data.total <= 10 || res.data.data.data.length == 0) {
+            if (res.data.data.total <= 10 || res.data.data.data.length <10 ) {
               vm.load_finished = true
-            }else{
+            } else {
               vm.load_finished = false
             }
           }
@@ -110,12 +110,41 @@
     }
   };
 </script>
-<style scoped lang="less">
-  /* @import url(); 引入css类 */
+<style lang="less">
+  @imgUrl: '../../assets/img/';
   #course-inner-wrap {
     padding-top: .506667rem;
     .van-pull-refresh {
       overflow: unset;
+    }
+    .van-list__finished-text {
+      font-size: 12px;
+      color: @txtGrey;
+      position: relative;
+      height: 40px;
+      line-height: 40px;
+      &::before {
+        content: '';
+        width: 1.333333rem;
+        height: 1px;
+        background:url("@{imgUrl}line_left.png");
+        background-size: 100% 100%;
+        position: absolute;
+        left: 50%;
+        top: 20px;
+        margin-left: 44px;
+      }
+      &::after {
+        content: '';
+        width: 1.333333rem;
+        height: 1px;
+        background:url("@{imgUrl}line_right.png");
+        background-size: 100% 100%;
+        position: absolute;
+        right: 50%;
+        top: 20px;
+        margin-right: 44px;
+      }
     }
   }
 </style>

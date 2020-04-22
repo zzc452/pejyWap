@@ -2,32 +2,74 @@
 <template>
     <div id="study-inner-wrap">
         <van-list v-model="load_moreing" :finished="load_finished" :finished-text="finished_text" @load="loadMore" :immediate-check="false">
-            <FreeStudyitem></FreeStudyitem>
-            <FeeStudyitem></FeeStudyitem>
+            <Studyitem v-if="course_data.length>0" :course="course_data"></Studyitem>
+            <NoData v-else txt="暂时没有课程"></NoData>
         </van-list>
     </div>
 </template>
 
 <script>
-    import FreeStudyitem from "./com/freeStudyitem"
-    import FeeStudyitem from "./com/feeStudyitem"
+    import {
+        getStudyCourse
+    } from "@/api/study"
+    import Studyitem from "./com/Studyitem"
+    import NoData from "./com/noData"
     export default {
         name: 'StudyInner',
         components: {
-            FreeStudyitem,
-            FeeStudyitem
+            Studyitem,
+            NoData
         },
         data() {
             return {
-                load_finished: true,
+                load_finished: false,
                 load_moreing: false,
-                finished_text: '已经到底啦'
+                finished_text: '已经到底啦',
+                limit: 10, //每页请求条数
+                course_data: [],
+                current_page: 1
             }
         },
+        computed: {
+        },
         methods: {
+            gatCourseData(page = 1) {
+                let params = {
+                    type: this.$parent.pathType,
+                    status: this.$parent.pathStatus,
+                    limit: this.limit,
+                    page: page
+                }
+                let vm = this;
+                getStudyCourse(params).then(res => {
+                    if (res.status === 1) {
+                        vm.current_page = res.data.data.current_page;
+                        if (page === 1) {
+                            this.course_data = res.data.data.data
+                            res.data.data.data.length == 0 ? vm.finished_text = '' : vm.finished_text = '已经到底啦';
+                        } else {
+                            vm.course_data.push(...res.data.data.data);
+                            vm.finished_text = '已经到底啦';
+                        }
+                        if (res.data.data.total <= this.limit || res.data.data.data.length < this.limit) {
+                            vm.load_finished = true
+                        } else {
+                            vm.load_finished = false
+                        }
+                    }
+                })
+            },
             loadMore() {
-                console.log('加载完成')
+                this.gatCourseData(this.current_page++);
             }
+        },
+        watch: {
+            '$route' () {
+                this.gatCourseData()
+            }
+        },
+        created() {
+            this.gatCourseData()
         }
     }
 </script>
@@ -37,10 +79,9 @@
         padding: .333333rem .333333rem 0;
         .study-item-wrap {
             .item-box {
-                margin-bottom: .333333rem;
-                &:last-of-type {
-                    margin-bottom: 0;
-                }
+                margin-bottom: .333333rem; // &:last-of-type {
+                //     margin-bottom: 0;
+                // }
             }
         }
         .van-list__finished-text {

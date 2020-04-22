@@ -2,18 +2,18 @@
 <template>
     <div>
         <div v-if="courseItem.length>0" class="course-item-outer">
-            <div class="course-item-box" v-for="( val,index) in courseItem" :key="index" @click="turnToCourseInfo(val.live_status,val.buy_status,val.id)">
+            <div class="course-item-box" v-for="( val,index) in courseItem" :key="index" @click="turnToCourseInfo(val.id)">
                 <h4><span class="bg-red" v-if="false">热卖</span>{{val.title}}</h4>
                 <div class="course-info-box">
                     <div class="left-box">
                         <!-- 免费课 -->
                         <div class="time-box" v-if="Number(courseType) === 0">
-                            <p>开始时间 {{val.start_play_time | formatDate('YYYY年MM月DD日 h:mm')}}</p>
-                            <p>结束时间 {{val.end_play_time | formatDate('YYYY年MM月DD日 h:mm')}}</p>
+                            <p>开始时间 {{val.start_play_time | formatDate('MM月DD日 h:mm')}}</p>
+                            <p>结束时间 {{val.end_play_time | formatDate('MM月DD日 h:mm')}}</p>
                         </div>
                         <!-- 付费课 -->
                         <div class="time-box" v-else>
-                            <p>{{val.start_play_time | formatDate('YYYY年MM月DD日')}}-{{val.end_play_time | formatDate('YYYY年MM月DD日')}}</p>
+                            <p>{{val.start_play_time | formatDate('MM月DD日')}}-<span v-if="getYear(val.start_play_time)<getYear(val.end_play_time)">次年</span>{{val.end_play_time | formatDate('MM月DD日')}}</p>
                             <p>{{val.start_play_friendly}}</p>
                         </div>
                         <ul :class="['teachers-box',{'one-teacher':val.teacher.length<2}]" v-if="val.teacher.length>0">
@@ -31,7 +31,7 @@
                 <van-divider :style="{ borderColor: '#eeeeee', padding: '0' }"></van-divider>
                 <div class="price-box">
                     <div class="student-num">
-                        <div v-if="Number(courseType) === 0"><span>{{val.sales_num_base}}人已报名</span>上限{{val.stock+val.sales_num_base}}人</div>
+                        <div v-if="Number(courseType) === 0"><span>{{val.sales_num_base}}人已报名</span>上限{{val.stock}}人</div>
                     </div>
                     <div class="now-price">
                         <em>￥{{val.underlined_price | roundNum()}}</em>优惠价:<strong>￥{{val.price | roundNum()}}</strong>
@@ -44,20 +44,28 @@
 </template>
 
 <script>
+    import { mapMutations } from 'vuex'
     export default {
         name: "CourseItem",
         props: ['courseItem', 'courseType'],
         methods:{
-            turnToCourseInfo(live,buy,id){
+            ...mapMutations('path', [
+                'SAVE_LOGIN_REDIRECT_PATH'
+            ]),
+            turnToCourseInfo(id){
                 if(!this.$store.getters.token){
                     this.$toast('请先登录');
+                    this.SAVE_LOGIN_REDIRECT_PATH(`/courseinfo/${id}`)
                     let vm = this;
                     setTimeout(()=>{
-                        vm.$router.push(`/courseinfo/${id}`);
+                        vm.$router.push('/login');
                     },1E3);
                     return
                 }
                 this.$router.push(`/courseinfo/${id}`);             
+            },
+            getYear(val){
+                this.$moment(val).format('yyyy');
             }
         },
         filters: {
@@ -80,10 +88,10 @@
                         }
                         break;
                     case 2:
-                        txt = "开始观看"
+                        txt = "开始学习"
                         break;
                     case 3:
-                        txt = "观看回放"
+                        txt = "开始学习"
                         break;
                 }
                 return txt;
@@ -180,6 +188,7 @@
                 }
                 .right-box {
                     flex: 0 0 auto;
+                    font-size: 0;
                     span {
                         display: inline-block;
                         padding: 0 .506667rem;

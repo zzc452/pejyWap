@@ -1,15 +1,15 @@
 <!-- 学习列表 -->
 <template>
     <div id="study-list-wrap">
-        <MyHeader title="免费直播课" :leftArrow="false"></MyHeader>
+        <MyHeader :title="titTxt" :fixed="true"></MyHeader>
         <!-- 学习列表 -->
         <div class="study-list-box">
             <div class="top-select-box">
                 <van-sticky offset-top="46">
-                    <van-tabs v-model="study_status" color="#FF6900" line-height="2" line-width="12" title-active-color="#FF6900" title-inactive-color="#000000">
-                        <van-tab title="正在学" name="0" to="/studylist/studystatus/1"></van-tab>
-                        <van-tab title="未开始" name="1" to="/studylist/studystatus/2"></van-tab>
-                        <van-tab title="已结束" name="2" to="/studylist/studystatus/3"></van-tab>
+                    <van-tabs @click="changeStatus" v-model="study_status" color="#FF6900" line-height="2" line-width="12" title-active-color="#FF6900" title-inactive-color="#000000">
+                        <van-tab title="正在学" name="2"></van-tab>
+                        <van-tab title="未开始" name="1"></van-tab>
+                        <van-tab title="已结束" name="3"></van-tab>
                     </van-tabs>
                 </van-sticky>
             </div>
@@ -23,20 +23,49 @@
     export default {
         data() {
             return {
-                study_status:0
+                study_status:2
             }
-        }
+        },
+        computed:{
+            titTxt(){ //标题
+                return this.$route.params.type==2 ? '购买过的课程':'免费直播课'
+            },
+            pathType(){ //路由课程类型
+                return this.$route.params.type==2 ? this.$route.params.type:1
+            },
+            pathStatus(){ //路由学习阶段
+                return this.$route.params.status?this.$route.params.status:1
+            }
+        },
+        methods:{
+            changeStatus(name) { //切换学习阶段
+                this.$router.push(`/studylist/${this.pathType}/studystatus/${name}`)
+            },
+        },
+        created(){ //根据路由重置学习阶段导航
+            this.study_status = this.$route.params.status?this.$route.params.status:1
+        },
+        watch: {
+            '$route' () {
+                this.study_status = this.$route.params.status?this.$route.params.status:1
+            }
+        },
     }
 </script>
 <style lang="less">
     #study-list-wrap{
         min-height:100vh;
-        background: #f1f1f1;
+        background: @bg2Grey;
+        box-sizing: border-box;
+        padding-top:46px;
         #public-nav-header {
             .van-nav-bar {
                 background: @gradualOrange;
                 .van-nav-bar__title {
                     color: @txtWhite;
+                }
+                .van-icon{
+                    color:@bgWhite;
                 }
             }
         }

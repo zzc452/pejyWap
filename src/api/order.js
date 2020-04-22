@@ -3,10 +3,10 @@ import fetch from '@/utils/fetch'
 
 
 // 获取省市区三联
-export function getThreeArea (params) {
+export function getThreeArea (param) {
     let url= '/admin/area/';
-    if(params === 0 || !!params){
-        url+=params
+    if(param === 0 || !!param){
+        url+=param
     }
 	return fetch({
 		url: url,
@@ -47,13 +47,46 @@ export function getAddressList () {
 	})
 }
 // 获取收货地址列表
-export function getAddressInfo (params) {
+export function getAddressInfo (param) {
 	let url= '/api/address/info/';
-    if(params === 0 || !!params){
-        url+=params
+    if(param === 0 || !!param){
+        url+=param
     }
 	return fetch({
 		url: url,
         method: 'get',
+	})
+}
+// 购买课程详情
+export function getBuyCourseInfo (params) {
+	return fetch({
+		url:'/api/course/buy/info',
+		params: params,
+        method: 'get',
+	})
+}
+// 下单
+export function creadeOrderData (params) {
+	return fetch({
+		url: '/api/order/create',
+		method: 'post',
+		data: params,
+		hideloading:true
+	})
+}
+// 获取订单详情
+export function getOrderInfo (params) {
+	return fetch({
+		url: '/api/order/select/pay',
+		params: params,
+        method: 'get'
+	})
+}
+// 支付
+export function payOrder (params) {
+	return fetch({
+		url: '/api/order/pay',
+		method: 'post',
+		data: params
 	})
 }

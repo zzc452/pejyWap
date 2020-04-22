@@ -3,6 +3,6 @@ const getters = {
     token: state => state.user.userInfo?state.user.userInfo.token:'',
     userInfo: state => state.user.userInfo?state.user.userInfo.info:null,
     wxLoginStatus: state => state.user.wxLoginStatus,
-    loginToPath: state => state.path.loginToPath ? state.path.loginToPath : encodeURI('/home'),
+    loginToPath: state => state.path.loginToPath,
   }
   export default getters

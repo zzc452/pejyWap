@@ -12,6 +12,7 @@ const CourseInfo = () => import('../views/courseInfo/courseInfo'); // 课程详�
 const Order = () => import('../views/order/order'); // 订单页
 const EditAddress = () => import('../views/order/editAddress'); // 编辑地址
 const SelectAddress = () => import('../views/order/selectAddress'); // 地址列表选择
+const PayMent = () => import('../views/pay/payment'); // 地址列表选择
 const StudyList = () => import('../views/study/studyList'); // 我的学习
 const StudyInner = () => import('../views/study/studyInner'); // 我的学习二级页
 const Login = () => import('../views/login/login'); // 登录
@@ -70,27 +71,45 @@ const routes = [
     path: '/courseinfo/:id',
     name: 'CourseInfo',
     component: CourseInfo,
-    // meta: {
-    //   requireLogin: true
-    // },
+    meta: {
+      requireLogin: true
+    },
   },
   {
-    path:'/order/:orderid?',
+    path:'/order/:courseid?',
     name:'Order',
-    component:Order
+    component:Order,
+    meta: {
+      requireLogin: true,
+      keepAlive:true
+    },
   },
   {
     path:'/editaddress/:id?',
     name:'EditAddress',
-    component:EditAddress
+    component:EditAddress,
+    meta: {
+      requireLogin: true
+    },
   },
   {
-    path:'/selectAddress',
+    path:'/selectaddress',
     name:'SelectAddress',
-    component:SelectAddress
+    component:SelectAddress,
+    meta: {
+      requireLogin: true
+    },
   },
   {
-    path:'/studylist',
+    path:'/payment/:sn',
+    name:'PayMent',
+    component:PayMent,
+    meta: {
+      requireLogin: true
+    },
+  },
+  {
+    path:'/studylist/:type',
     name:'StudyList',
     component:StudyList,
     children: [
@@ -98,6 +117,9 @@ const routes = [
         path: 'studystatus/:status?',
         name: 'StudyInner',
         component: StudyInner,
+        meta: {
+          requireLogin: true
+        },
       },
       {
         path: 'studystatus',
@@ -173,8 +195,7 @@ const routes = [
   },
   {
     path: '*',
-    name: '404',
-    component: Error
+    redirect:'/404'
   },
 
 ]

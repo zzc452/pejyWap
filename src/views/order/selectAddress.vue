@@ -6,7 +6,7 @@
             <h4>配送地址</h4>
             <van-divider :style="{ color: '#eeeeee' }" />
             <van-cell v-for="(val,index) in data_list" :key="index">
-                <div class="info-box" slot="title">
+                <div class="info-box" slot="title" @click="useAddress(val)">
                     <h6><span>{{val.receiver}}</span><i>{{val.mobile}}</i>
                         <van-tag v-if="val.is_default === 1" color="#ff6b03" plain>默认</van-tag>
                     </h6>
@@ -28,16 +28,37 @@
 
 <script>
     import { getAddressList } from "@/api/order"
+    import { mapState,mapMutations } from 'vuex'
     export default {
         name:"SelectAddress",
         data() {
             return {
-                data_list:""
+                data_list:[]
             }
         },
+        computed:{
+            ...mapState('path',[
+                'orderToPath'
+            ]),
+        },
         methods:{
+            ...mapMutations('order', [
+                'SET_ORDER_ADDR'
+            ]),
             gotoEdite(id){
                 this.$router.push({ path: `/editaddress/${id}` })
+            },
+            useAddress(val){
+                let addr = {
+                    address:val.address,
+                    id:val.id,
+                    is_default:val.is_default,
+                    mobile:val.mobile,
+                    area:val.province+val.city+val.district,
+                    receiver:val.receiver,
+                }
+                this.SET_ORDER_ADDR(addr)
+                this.$router.replace(decodeURI(this.orderToPath))
             }
         },
         //生命周期 - 创建完成（访问当前this实例）

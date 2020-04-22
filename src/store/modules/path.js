@@ -5,23 +5,32 @@ import cache from '@/utils/cache'
 export default{
     namespaced: true,
     state: {
-        loginToPath:cache.setLocal("loginToPath")? cache.setLocal("loginToPath"): encodeURI('/home'),
+        loginToPath:cache.getSession("loginToPath") && cache.getSession("loginToPath")!="undefined"? cache.getSession("loginToPath"): encodeURI('/home'),
+        orderToPath:cache.getSession("orderToPath") && cache.getSession("orderToPath")!="undefined"? cache.getSession("orderToPath"): encodeURI('/home'),
         isWeChat:false
     },
     mutations: {
         [types.SAVE_LOGIN_REDIRECT_PATH](state,val){
             let url = encodeURI(val)
             state.loginToPath = url;
-            cache.setLocal('loginToPath',url);
+            cache.setSession('loginToPath',url);
         },
         [types.CLEAR_LOGIN_REDIRECT_PATH](state){
-            state.loginToPath = '';
-            cache.removeLocal('loginToPath');
+            state.loginToPath = encodeURI('/home');
+            cache.removeSession('loginToPath');
         },
         [types.SAVE_BROWSER](state,val){
             state.isWeChat = val;
             cache.setLocal('isWeChat',val);
         },
-        
+        [types.SAVE_ORDER_PATH](state,val){
+            let url = encodeURI(val)
+            state.orderToPath = url;
+            cache.setSession('orderToPath',url);
+        },
+        [types.CLEAR_ORDER_PATH](state){
+            state.orderToPath = encodeURI('/home');
+            cache.removeSession('orderToPath');
+        },
     }
 }

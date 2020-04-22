@@ -2,24 +2,24 @@
 <template>
     <div id="edit-address-wrap">
         <MyHeader :title="titTxt" :border="true">
-            <div class="btn-delete" slot="right" v-if="is_edite" @click="deleteAddress(address_id)" >删除</div>
+            <div class="btn-delete" slot="right" v-if="is_edite" @click="deleteAddress(address_id)">删除</div>
         </MyHeader>
         <div class="edit-area">
             <div class="top-box">
                 <van-field v-model="receiver" label="收货人" placeholder="请填写收货人姓名" />
                 <van-field v-model="mobile" label="联系方式" placeholder="请填写收货人真实的手机号码" />
-                <van-field v-model="area_info" readonly clickable name="area" label="所在地区" placeholder="请选择所在地区" :is-link="true" @click="selectArea" />
+                <van-field v-model="areaInfo" readonly clickable name="area" label="所在地区" placeholder="请选择所在地区" :is-link="true" @click="selectArea" />
                 <van-field v-model="address_info" rows="1" autosize label="详细地址" type="textarea" placeholder="请填写详细地址" />
             </div>
             <div class="set-default">
                 <van-field name="switch" label="设置为默认地址">
                     <template #input>
-                        <van-switch v-model="set_default" active-color="#ff6900" size="26" />
+                            <van-switch v-model="set_default" active-color="#ff6900" size="26" />
                     </template>
                 </van-field>
             </div>
             <div class="save-button-box">
-                <MyButton title="保存并使用" @click="saveAddress"></MyButton>
+                <MyButton title="保存并使用" @click="addAddress"></MyButton>
             </div>
         </div>
         <van-popup v-model="show_area" position="bottom">
@@ -36,6 +36,7 @@
         getThreeArea,
         getAddressInfo
     } from "@/api/order"
+    import { mapState,mapMutations } from 'vuex'
     export default {
         name: "EditeAddress",
         data() {
@@ -55,15 +56,21 @@
                     text: "请选择"
                 }],
                 address_id: '',
-                area_info: '',
+                province_info: '',
+                city_info: '',
+                district_info: '',
                 address_info: '',
                 set_default: false,
                 show_area: false,
                 loading_area: false,
-                is_edite: false //区分修改地址和添加地址
+                is_edite: false, //区分修改地址和添加地址
+                has_saved: false
             }
         },
         methods: {
+            ...mapMutations('order', [
+                'SET_ORDER_ADDR'
+            ]),
             selectArea() {
                 this.show_area = true;
                 this.loading_area = false;
@@ -80,13 +87,13 @@
                             res.data.area[i].text = res.data.area[i].name
                         }
                         switch (level) {
-                            case 0:// 省
+                            case 0: // 省
                                 this.province_data = res.data.area
                                 break;
-                            case 1:// 市
+                            case 1: // 市
                                 this.city_data = res.data.area
                                 break;
-                            case 2:// 区
+                            case 2: // 区
                                 this.district_data = res.data.area
                                 break;
                         }
@@ -94,7 +101,20 @@
                     return res
                 })
             },
-            addAddress() {
+            addAddress() { //添加或编辑地址信息
+                if(!this.receiver || this.receiver.length<2){
+                    this.$toast('请输入收货人姓名')
+                    return
+                }
+                let phoneReg = /^1[3456789]\d{9}$/;
+                if (!phoneReg.test(this.mobile)) {
+                    this.$toast('请输入正确手机号')
+                    return;
+                }
+                if(!this.address_info || this.address_info<1){
+                    this.$toast('请输入详细地址')
+                    return
+                }
                 let params = {
                     receiver: this.receiver,
                     mobile: this.mobile,
@@ -104,44 +124,65 @@
                     address: this.address_info,
                     is_default: this.is_default
                 }
-                if(this.is_edite){
+                if (this.is_edite) {
                     params.id = this.address_id;
                     updateAddressData(params).then(res => {
                         if (res.status === 1) {
-                            this.$toast.success('修改成功')
+                            this.has_saved = true;
+                            this.setAddress()
+                            this.$router.replace(decodeURI(this.orderToPath))
                         }
                     })
-                }else{
+                } else {
                     addAddressData(params).then(res => {
                         if (res.status === 1) {
-                            this.$toast.success('提交成功')
+                            this.address_id = res.data.id;
+                            this.setAddress()
+                            this.has_saved = true;
+                            this.$router.replace(decodeURI(this.orderToPath))
                         }
                     })
                 }
-                
             },
-            saveAddress() {
-                this.addAddress();
-            },
-            deleteAddress(id){
+            deleteAddress(id) { //删除地址信息
+                let vm = this;
                 this.$dialog.confirm({
-                    message: '确认删除当前地址吗',
-                })
-                .then(() => {
-                    let params = {id:id}
-                    deleteAddressData(params).then(res => {
-                        if (res.status === 1) {
-                            this.$toast.success('删除成功')
-                        }
+                        message: '确认删除当前地址吗',
                     })
-                })
-                .catch(() => {
-                    alert('7')
-                    return;
-                });    
+                    .then(() => {
+                        let params = {
+                            id: id
+                        }
+                        deleteAddressData(params).then(res => {
+                            if (res.status === 1) {
+                                vm.has_saved = true
+                                this.$toast.success('删除成功')
+                                setTimeout(() => {
+                                    vm.$router.replace('/selectaddress')
+                                }, 0.5E3)
+                            }
+                        })
+                    })
+                    .catch(() => {
+                        return;
+                    });
+            },
+            setAddress(){ //把当前地址存在vuex中传递给订单
+                let addr = {
+                    address:this.address_info,
+                    id:this.address_id,
+                    is_default:this.is_default,
+                    mobile:this.mobile,
+                    area:this.areaInfo,
+                    receiver:this.receiver,
+                }
+                this.SET_ORDER_ADDR(addr)
             }
         },
         computed: {
+            ...mapState('path',[
+                'orderToPath'
+            ]),
             areaList() {
                 return [{
                     values: this.province_data
@@ -154,11 +195,14 @@
             is_default() {
                 return this.set_default ? 1 : 2;
             },
-            isEdite() {
+            isEdite() { //判断是修改地址还是新增地址
                 return (this.$route.params.id === 0 || !!this.$route.params.id) ? true : false
             },
-            titTxt(){
+            titTxt() {
                 return (this.$route.params.id === 0 || !!this.$route.params.id) ? "修改收货地址" : "添加收货地址"
+            },
+            areaInfo(){
+                return this.province_info + this.city_info + this.district_info;
             }
         },
         created() {
@@ -170,7 +214,9 @@
                         this.address_id = res.data.info.id
                         this.receiver = res.data.info.receiver
                         this.mobile = res.data.info.mobile
-                        this.area_info = res.data.info.province + res.data.info.city + res.data.info.district;
+                        this.province_info = res.data.info.province;
+                        this.city_info = res.data.info.city;
+                        this.district_info =res.data.info.district;
                         this.address_info = res.data.info.address
                         this.set_default = res.data.info.is_default === 1 ? true : false
                     }
@@ -182,16 +228,22 @@
                 this.is_edite = false
             }
         },
-        beforeRouteLeave (to,from,next) {
-            this.$dialog.confirm({
-                    message: '收货信息还未保存，确定返回？',
-                })
-                .then(() => {
-                    next();
-                })
-                .catch(() => {
-                    return false;
-                });
+        beforeRouteLeave(to, from, next) {
+            let vm = this
+            if (!vm.has_saved) {
+                this.$dialog.confirm({
+                        message: '收货信息还未保存，确定返回？',
+                    })
+                    .then(() => {
+                        next();
+                    })
+                    .catch(() => {
+                        vm.$router.go(1)
+                        return false;
+                    });
+            }else{
+                next();
+            }
         }
     }
 </script>
