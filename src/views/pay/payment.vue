@@ -59,6 +59,11 @@
                 pay_style: '1'
             }
         },
+        computed:{
+            payCode(){
+                return this.pay_style == 1? 'Alipay':'Wechat'
+            }
+        },
         methods:{
             initData(){
                 let sn = this.$route.params.sn;
@@ -80,8 +85,7 @@
                 let params={
                     order_sn:this.$route.params.sn,
                     source:'h5',
-                    // pay_code:'Wechat',
-                    pay_code:'Alipay'
+                    pay_code:this.payCode
                 }
                 payOrder(params).then(res=>{
                     console.log(res)

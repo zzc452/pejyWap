@@ -9,6 +9,7 @@ Vue.prototype.$axios = axios
 // 样式
 import '@/assets/css/reset.css'
 import '@/assets/css/vars.less'
+import '@/assets/css/public.less'
 
 Vue.config.productionTip = false
 // 引入第三方
@@ -73,7 +74,7 @@ router.beforeEach((to, from, next) => {
             next('/login')
           }
         }).catch(() => {
-          next('/error')
+          next('/404')
         })
 
       }
@@ -87,7 +88,7 @@ router.beforeEach((to, from, next) => {
   }
 })
 router.afterEach((to) => {
-  if (to.fullPath == decodeURI(store.getters.loginToPath)) {
+  if (to.fullPath == decodeURI(store.getters.loginToPath) && to.fullPath!='/home') {
     store.commit('path/CLEAR_LOGIN_REDIRECT_PATH');
   }
 })

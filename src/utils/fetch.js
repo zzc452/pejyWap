@@ -51,7 +51,7 @@ service.interceptors.response.use(
       Toast(res.message);
     }
     if (res.status && res.status == 401) {
-      store.dispatch('user/fedLogOut').then(() => {
+      store.dispatch('user/logOut').then(() => {
         location.reload()
       })
       return Promise.reject(res || 'error')

@@ -46,12 +46,12 @@ export default {
                 commit('CLEAR_USER')
             }
             // 设置不同的登录状态
-            commit('SET_LOGIN_STATUS', query)
+            commit('SET_WXLOGIN_STATUS', query)
         },
-        // 登出
-        fedLogOut({ commit }) {
+        // 退出登录
+        logOut({ commit }) {
             commit('CLEAR_USER');
-            commit('SET_LOGIN_STATUS', 0);
+            commit('SET_WXLOGIN_STATUS', 0);
         }
     }
 }

@@ -25,8 +25,7 @@ export function getCourseSetting (params) {
 export function getCourseList (params) {
     let config = {
 		url: '/api/course/list',
-		method: 'get',
-		noToken:true
+		method: 'get'
 	}
     if(params.type !== 'default'){
         config.hideloading = true;

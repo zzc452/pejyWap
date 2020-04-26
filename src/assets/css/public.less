@@ -1,0 +1,33 @@
+// 公共样式
+@imgUrl:'../img/';
+.van-list {
+    .van-list__finished-text {
+        font-size: 12px;
+        color: @txtGrey;
+        position: relative;
+        height: 40px;
+        line-height: 40px;
+        &::before {
+            content: '';
+            width: 1.333333rem;
+            height: 1px;
+            background:url("@{imgUrl}line_left.png");
+            background-size: 100% 100%;
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            margin-left: 44px;
+        }
+        &::after {
+            content: '';
+            width: 1.333333rem;
+            height: 1px;
+            background:url("@{imgUrl}line_right.png");
+            background-size: 100% 100%;
+            position: absolute;
+            right: 50%;
+            top: 20px;
+            margin-right: 44px;
+        }
+    }
+}

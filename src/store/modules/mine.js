@@ -16,7 +16,6 @@ export default {
     actions: {
         async getAccountInfo({ commit,state }) {
             let res;
-            let data;
             if(JSON.stringify(state.accountInfo) != "{}"){
                 res = state.accountInfo
             }else{
@@ -24,39 +23,36 @@ export default {
                     .then(json => {
                         res = json
                         if (json.status === 1) {
-                            data = json
+                            commit('SAVE_ACCOUNTINFO', json)
                         }
                     })
-                commit('SAVE_ACCOUNTINFO', data)
             }
             return res;
         },
         async updateAccount({commit,state},params){
             let res;
-            let oldInfo = state.accountInfo
             let info = JSON.parse((JSON.stringify(state.accountInfo)));
             if(JSON.stringify(state.accountInfo) != "{}"){
                 info.data.info.nickname = params.nickname
                 info.data.info.sex = params.sex
                 info.data.info.avatar = params.avatar
-                info.data.info.class = params.class
+                info.data.info.class_attr = params.class_attr
             }
             let data = {
                 avatar:params.avatar,
                 sex:params.sex.id,
                 nickname:params.nickname,
             }
-            if(typeof params.class.id != 'undefined'){
-                data.subject_id=params.class.id
+            if(typeof params.class_attr.id != 'undefined'){
+                data.subject_id=params.class_attr.id
             }
             await updateMyInfo(data)
             .then(json=>{
                 res = json;
                 if(json.status === 1){
-                    oldInfo = info
+                    commit('SAVE_ACCOUNTINFO', info)
                 }
             })
-            commit('SAVE_ACCOUNTINFO', oldInfo)
             return res;
         },
     }

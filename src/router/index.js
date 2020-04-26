@@ -12,18 +12,25 @@ const CourseInfo = () => import('../views/courseInfo/courseInfo'); // 课程详�
 const Order = () => import('../views/order/order'); // 订单页
 const EditAddress = () => import('../views/order/editAddress'); // 编辑地址
 const SelectAddress = () => import('../views/order/selectAddress'); // 地址列表选择
-const PayMent = () => import('../views/pay/payment'); // 地址列表选择
+const PayMent = () => import('../views/pay/payment'); // 订单支付页
+const PayCheck = () => import('../views/pay/payCheck'); // 微信h5支付时手动查询页
+const PayResult = () => import('../views/pay/payResult'); // 支付结果页
 const StudyList = () => import('../views/study/studyList'); // 我的学习
 const StudyInner = () => import('../views/study/studyInner'); // 我的学习二级页
 const accountSet = () => import('../views/mine/accountSet'); // 个人中心账号设置
-const orderList = () => import('../views/mine/orderList'); // 个人中心账号设置
-const orderInner = () => import('../views/mine/orderInner'); // 个人中心账号设置
+const orderList = () => import('../views/mine/orderList'); // 个人中心订单列表
+const orderInner = () => import('../views/mine/orderInner'); // 个人中心订单列表二级页
+const systemSet = () => import('../views/mine/systemSet'); // 个人中心系统设置
+const changePassword = () => import('../views/mine/changePassword'); // 个人中心更改密码
+const aboutUs = () => import('../views/mine/aboutUs'); // 个人中心关于我们
+const Agreement = () => import('../views/mine/agreement'); // 个人中心用户协议
+const UserNotice = () => import('../views/mine/userNotice'); // 个人中心用户须知
 const Login = () => import('../views/login/login'); // 登录
 const BindPhone = () => import('../views/login/bindPhone'); // 绑定手机
 const BindCode = () => import('../views/login/bindCode'); // 绑定手机 验证码
 const ForgetPassword = () => import('../views/login/forgetPassword'); // 找回密码
 const SelectGrade = () => import('../views/login/selectGrade'); // 绑定年级
-const Agreement = () => import('../views/mine/agreement'); // 用户协议
+
 const Error = () => import('../views/error/error'); // 404
 
 Vue.use(VueRouter)
@@ -56,7 +63,7 @@ const routes = [
     name: 'Mine',
     component: Mine,
     meta: {
-      keepAlive:true
+      keepAlive: true
     },
   },
   {
@@ -85,42 +92,58 @@ const routes = [
     },
   },
   {
-    path:'/order/:courseid?',
-    name:'Order',
-    component:Order,
+    path: '/order/:courseid?',
+    name: 'Order',
+    component: Order,
     meta: {
       requireLogin: true,
-      keepAlive:true
+      keepAlive: true
     },
   },
   {
-    path:'/editaddress/:id?',
-    name:'EditAddress',
-    component:EditAddress,
+    path: '/editaddress/:id?',
+    name: 'EditAddress',
+    component: EditAddress,
     meta: {
       requireLogin: true
     },
   },
   {
-    path:'/selectaddress',
-    name:'SelectAddress',
-    component:SelectAddress,
+    path: '/selectaddress',
+    name: 'SelectAddress',
+    component: SelectAddress,
     meta: {
       requireLogin: true
     },
   },
   {
-    path:'/payment/:sn',
-    name:'PayMent',
-    component:PayMent,
+    path: '/payment/:sn',
+    name: 'PayMent',
+    component: PayMent,
     meta: {
       requireLogin: true
     },
   },
   {
-    path:'/studylist/:type',
-    name:'StudyList',
-    component:StudyList,
+    path: '/paycheck/:sn',
+    name: 'PayCheck',
+    component: PayCheck,
+    meta: {
+      requireLogin: true
+    },
+  },
+  {
+    path: '/payresult/:sn',
+    name: 'PayResult',
+    component: PayResult,
+    meta: {
+      requireLogin: true
+    },
+  },
+  {
+    path: '/studylist/:type',
+    name: 'StudyList',
+    component: StudyList,
     children: [
       {
         path: 'studystatus/:status?',
@@ -174,6 +197,12 @@ const routes = [
     name: 'Agreement'
   },
   {
+    path: '/usernotice',
+    component: UserNotice,
+    name: 'UserNotice'
+  },
+  
+  {
     path: '/selectgrade',
     component: SelectGrade,
     name: 'SelectGrade',
@@ -211,6 +240,27 @@ const routes = [
       }
     ]
   },
+  {
+    path: '/systemset',
+    name: 'systemSet',
+    component: systemSet,
+    meta: {
+      requireLogin: true
+    },
+  },
+  {
+    path: '/changepassword',
+    name: 'changePassword',
+    component: changePassword,
+    meta: {
+      requireLogin: true
+    },
+  },
+  {
+    path: '/aboutus',
+    name: 'aboutUs',
+    component: aboutUs
+  },
   
   {
     path: '/404',
@@ -219,7 +269,7 @@ const routes = [
   },
   {
     path: '*',
-    redirect:'/404'
+    redirect: '/404'
   },
 
 ]

@@ -12,7 +12,7 @@
 
 <script>
     import wechatAuth from '@/plugins/wechatAuth'
-    import { mapMutations } from 'vuex'
+    import { mapActions } from 'vuex'
     export default {
         data() {
             return {}
@@ -24,7 +24,7 @@
                 await this.setWxLoginStatus(1);
                 window.location.href = wechatAuth.authUrl
             },
-            ...mapMutations('user', [
+            ...mapActions('user', [
                 'setWxLoginStatus'
             ]),
         }

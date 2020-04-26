@@ -30,10 +30,10 @@
           <van-cell is-link>
             <div slot="title" class="notice">用户须知</div>
           </van-cell>
-          <van-cell is-link>
+          <van-cell is-link to="/aboutus">
             <div slot="title" class="aboutus">关于我们</div>
           </van-cell>
-          <van-cell is-link>
+          <van-cell is-link to="/systemset">
             <div slot="title" class="setting">系统设置</div>
           </van-cell>
         </div>
@@ -72,9 +72,6 @@
         this.$store.commit('path/SAVE_LOGIN_REDIRECT_PATH','/mine');
         this.$router.push('/login')
       }
-    },
-    created(){
-      this.initData()
     },
     activated(){
       this.initData()

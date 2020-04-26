@@ -1,6 +1,8 @@
 <!-- 协议 -->
 <template>
-  <div>协议</div>
+  <div>
+    <MyHeader title="用户协议"></MyHeader>
+  </div>
 </template>
 
 <script>

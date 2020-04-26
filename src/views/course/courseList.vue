@@ -2,17 +2,15 @@
 <template>
     <div id="course-list-wrap">
         <!-- 公共头 -->
-        <MyHeader :title="header_title" :fixed="true">
+        <MyHeader :title="header_title" :fixed="true" >
             <div class="btn-select-grade" slot="right" @click="showPopGrade">{{now_gradeName}}</div>
         </MyHeader>
         <!-- 课程列表 -->
         <div class="course-list-box">
             <div class="top-select-box" v-show="subject_show">
-                <van-sticky offset-top="46">
-                    <van-tabs @click="changeSubject" v-model="now_subjectId" :border="false" color="#ffffff" line-height="3" line-width="10" title-active-color="#ffffff" title-inactive-color="#ffffff">
-                        <van-tab v-for="(value,index) in subjects" :key="index" :title="value.name" :name="value.id"></van-tab>
-                    </van-tabs>
-                </van-sticky>
+                <van-tabs @click="changeSubject" v-model="now_subjectId" :border="false" color="#ffffff" line-height="3" line-width="10" title-active-color="#ffffff" title-inactive-color="#ffffff">
+                    <van-tab v-for="(value,index) in subjects" :key="index" :title="value.name" :name="value.id"></van-tab>
+                </van-tabs>
             </div>
             <router-view></router-view>
         </div>
@@ -50,6 +48,7 @@
         },
         methods: {
             changeSubject(name) { //切换科目
+                if(name == this.path_subjectId) return;
                 this.$router.push(`/courselist/${this.course_price}/grade/${this.path_gradeId}/subject/${name}`)
             },
             showPopGrade() {
@@ -121,7 +120,7 @@
 <style lang="less">
     @imgUrl: '../../assets/img/';
     #course-list-wrap {
-        padding-top: 46px;
+        padding-top: 76px;
         #public-nav-header .van-nav-bar {
             z-index: 888;
         }
@@ -136,23 +135,26 @@
         }
         .course-list-box {
             .top-select-box {
+                position: fixed;
+                z-index: 889;
                 padding: 0 .453333rem;
                 background: @gradualOrange;
+                top: 45px;
+                width: 100%;
+                box-sizing: border-box;
                 .van-sticky--fixed {
                     padding: 0 0.453333rem;
-                    padding-bottom: 0.24rem;
-                    background: #fff;
                 }
                 .van-tabs {
                     z-index: 66;
                     .van-tabs__wrap{
-                        height: 26px;
+                        height: 32px;
                     }
                     .van-tab {
                         padding: 0;
                         font-size: 14px;
                         flex: 0 0 auto;
-                        line-height: 14px;
+                        line-height: 22px;
                         flex-basis: auto!important;
                         margin-right: .64rem;
                         &:nth-last-of-type(2) {

@@ -55,5 +55,8 @@
         .van-nav-bar__arrow{
             font-size: 24px;
         }
+        .van-hairline--bottom::after{
+            border-color:#E0E0E0;
+        }
     }
 </style>

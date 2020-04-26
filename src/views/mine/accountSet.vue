@@ -168,13 +168,15 @@
                     nickname: this.name,
                     sex: this.sex,
                     avatar: this.avatar,
-                    class: this.period
+                    class_attr: this.period
                 }
                 vm.updateAccount(params).then(res => {
                     if (res.status === 1) {
                         vm.$toast.success('修改成功')
                         vm.has_saved = true
-                        vm.$router.push('/mine')
+                        setTimeout(()=>{
+                            vm.$router.push('/mine')
+                        },1E3)
                     }
                 }).finally(()=>{
                     vm.is_saving = false;
@@ -189,7 +191,7 @@
                         this.original_name = data.nickname
                         this.sex = data.sex
                         this.avatar = data.avatar
-                        this.period = data.class
+                        this.period = data.class_attr
                     }
                 })
             },

@@ -1,6 +1,6 @@
 <!-- 公共橙色风格按钮 -->
 <template>
-    <div class="my-orange-btn" @click="btnClick">
+    <div class="my-orange-btn" @click="$emit('click')">
         <van-button :loading="this.isLogining" :loading-text="titleing" :native-type="this.isLogining ? 'button' : 'submit'" block :color="bgColor">{{title}}</van-button>
     </div>
 </template>
@@ -28,11 +28,6 @@
         computed:{
             titleing(){
                 return this.title+'中...'
-            }
-        },
-        methods:{
-            btnClick(){
-                this.$emit('click');
             }
         }
     }
