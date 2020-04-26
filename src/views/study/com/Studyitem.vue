@@ -1,43 +1,45 @@
-<!-- 学习表付费课组件 -->
+<!-- 学习表组件 -->
 <template>
-    <div class="study-item-wrap">
-        <div class="item-box" v-for="(val,index) in course" :key="index">
-            <div class="tit-box">
-                <h6>{{val.title}}</h6>
-                <p>主讲老师：<span v-for="(tea,num) in val.teacher" :key="num">{{tea.nickname}}</span></p>
-            </div>
-            <van-divider :style="{ borderColor: '#dddddd', margin: '0px' }" />
-            <div class="info-list">
-                <div v-for="(item,n) in val.course_item" :key="n">
-                    <div class="info-box">
-                        <div class="left">
-                            <h6>{{item.title}}</h6>
-                            <p>{{item.time}}</p>
+    <div>
+        <div v-if="course.length>0" class="study-item-wrap">
+            <div class="item-box" v-for="(val,index) in course" :key="index">
+                <div class="tit-box">
+                    <h6>{{val.title}}</h6>
+                    <p>主讲老师：<span v-for="(tea,num) in val.teacher" :key="num">{{tea.nickname}}</span></p>
+                </div>
+                <van-divider :style="{ borderColor: '#dddddd', margin: '0px' }" />
+                <div class="info-list">
+                    <div v-for="(item,n) in val.course_item" :key="n">
+                        <div class="info-box">
+                            <div class="left">
+                                <h6>{{item.title}}</h6>
+                                <p>{{item.time}}</p>
+                            </div>
+                            <div class="right">
+                                <em v-if="item.live_status ===2"></em>
+                                <i v-if="item.live_status ===1">未开课</i>
+                                <span v-else-if="item.live_status ===2" class="bg-orange">进入课堂</span>
+                                <span v-else-if="item.live_status ===3" class="bg-grey">回放生成中</span>
+                                <span v-else class="bg-blue">观看回放</span>
+                            </div>
                         </div>
-                        <div class="right">
-                            <em v-if="item.live_status ===2"></em>
-                            <i v-if="item.live_status ===1">未开课</i>
-                            <span v-else-if="item.live_status ===2" class="bg-orange">进入课堂</span>
-                            <span v-else-if="item.live_status ===3" class="bg-grey">回放生成中</span>
-                            <span v-else class="bg-blue">观看回放</span>
-                        </div>
+                        <van-divider :style="{ borderColor: '#dddddd', margin: '0px' }" />
                     </div>
-                    <van-divider :style="{ borderColor: '#dddddd', margin: '0px' }" />
+                </div>
+                <div class="footer-box" v-if="val.course_item>2 && course.length>1">
+                    展开<i></i>
                 </div>
             </div>
-            <div class="footer-box" v-if="val.course_item>2 && course.length>1">
-                展开<i></i>
-            </div>
         </div>
+        <MyEmpty v-else txt="暂时没有课程"></MyEmpty>
     </div>
 </template>
-
 <script>
     export default {
         name: "StudyItem",
-        props:{
-            course:{
-                type:Array
+        props: {
+            course: {
+                type: Array
             }
         },
         data() {
@@ -66,8 +68,8 @@
                     color: @txtBlack;
                     margin-bottom: 4px;
                 }
-                p span{
-                    padding-right:4px;
+                p span {
+                    padding-right: 4px;
                 }
             }
             .info-box {
@@ -124,7 +126,7 @@
                     }
                 }
             }
-            .footer-box{
+            .footer-box {
                 height: 16px;
                 line-height: 16px;
                 text-align: center;
@@ -132,7 +134,7 @@
                 font-size: 12px;
                 color: @txtGrey;
                 cursor: pointer;
-                i{
+                i {
                     display: inline-block;
                     width: 15px;
                     height: 15px;

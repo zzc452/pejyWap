@@ -136,14 +136,6 @@
         box-sizing: border-box;
         background: @bg2Grey;
         padding-bottom: 108px;
-        #public-nav-header {
-            .van-nav-bar {
-                background: @gradualOrange;
-                .van-nav-bar__title {
-                    color: @txtWhite;
-                }
-            }
-        }
         .calendar-box{
             padding-bottom: .613333rem;
              background: @bgWhite;

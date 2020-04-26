@@ -2,15 +2,17 @@
 <template>
   <div id="mine">
     <div class="toparea">
-      <router-link tag="div" class="user-box" v-if="userInfo.token" to="/accountsetting">
+      <!-- 已登录 -->
+      <router-link tag="div" class="user-box" v-if="userInfo && userInfo.token" to="/accountsetting">
         <div class="pic">
-          <img :src="userInfo.info.avatar?userInfo.info.avatar:default_avatar" alt="">
+          <img :src="account_info.avatar | formatUrl()" alt="">
         </div>
         <div class="txt">
-          <h6>{{userInfo.info.nickname}}</h6>
-          <p>{{userInfo.info.mobile}}</p>
+          <h6>{{account_info.nickname}}</h6>
+          <p>{{account_info.mobile}}</p>
         </div>
       </router-link>
+      <!-- 未登录 -->
       <div class="user-box" @click="gotoLogin" v-else>
         <div class="pic">
           <img src="../../assets/img/my_setAvatar.png" alt="">
@@ -22,7 +24,7 @@
       </div>
       <div class="mine-menu-box">
         <div class="menu-list">
-          <van-cell is-link>
+          <van-cell is-link to="/orderlist/state/1">
             <div slot="title" class="order">我的订单</div>
           </van-cell>
           <van-cell is-link>
@@ -42,15 +44,13 @@
 </template>
 
 <script>
-  import {
-    mapState
-  } from 'vuex'
+  import { mapActions,mapState } from "vuex"
   export default {
     name: "Mine",
-    data() {
-      return {
-        default_avatar: require('../../assets/img/error.jpg')
-      };
+    data(){
+      return{
+        account_info:{}
+      }
     },
     computed: {
       ...mapState('user', [
@@ -58,10 +58,26 @@
       ])
     },
     methods:{
+      ...mapActions('mine',[
+            'getAccountInfo',
+        ]), 
+      initData(){
+        this.getAccountInfo().then(res=>{
+          if(res.status === 1){
+            this.account_info = res.data.info
+          }
+        })
+      },
       gotoLogin(){
         this.$store.commit('path/SAVE_LOGIN_REDIRECT_PATH','/mine');
         this.$router.push('/login')
       }
+    },
+    created(){
+      this.initData()
+    },
+    activated(){
+      this.initData()
     }
   };
 </script>

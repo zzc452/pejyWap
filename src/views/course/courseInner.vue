@@ -113,7 +113,7 @@
 <style lang="less">
   @imgUrl: '../../assets/img/';
   #course-inner-wrap {
-    padding-top: .506667rem;
+    padding: .506667rem .453333rem 0;
     .van-pull-refresh {
       overflow: unset;
     }

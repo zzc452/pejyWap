@@ -2,40 +2,43 @@
 <template>
     <div id="confirm-order-wrap">
         <MyHeader title="确认订单" :fixed="true"></MyHeader>
-        <van-notice-bar wrapable :scrollable="false" color="#6B3A18" background="#fef4eb">
-            已经结束的直播课程产生的回放视频+剩余课程的直播和后 续产出的回放视频
-        </van-notice-bar>
-        <div class="order-area">
-            <Address ref="address" :orderAddr="orderAddress" v-if="order_info.course.have_materials === 1"></Address>
-            <div class="goods-info-box">
-                <h6>{{order_info.course.title}}</h6>
-                <div class="row">
-                    <div class="left">
-                        <p>直播时间：</p>
+        <div class="content-box" v-show="show_content">
+            <van-notice-bar wrapable :scrollable="false" color="#6B3A18" background="#fef4eb">
+                已经结束的直播课程产生的回放视频+剩余课程的直播和后 续产出的回放视频
+            </van-notice-bar>
+            <div class="order-area">
+                <Address ref="address" :orderAddr="orderAddress" v-if="order_info.course.have_materials === 1"></Address>
+                <div class="goods-info-box">
+                    <h6>{{order_info.course.title}}</h6>
+                    <div class="row">
+                        <div class="left">
+                            <p>直播时间：</p>
+                        </div>
+                        <div class="right">
+                            <p>3月26日-4月26日</p>
+                            <p> {{order_info.course.start_play_friendly}}</p>
+                        </div>
                     </div>
-                    <div class="right">
-                        <p>3月26日-4月26日</p>
-                        <p> {{order_info.course.start_play_friendly}}</p>
+                    <div class="row">
+                        <div class="left">
+                            <p>主讲老师：</p>
+                        </div>
+                        <div class="right">
+                            <p><span v-for="(val,index) in order_info.course.teacher" :key="index">{{val.nickname}}</span> </p>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="left">
-                        <p>主讲老师：</p>
+                    <div class="price">
+                        <em>￥{{order_info.course.underlined_price}}</em><strong>￥{{order_info.course.price}}</strong>
                     </div>
-                    <div class="right">
-                        <p><span v-for="(val,index) in order_info.course.teacher" :key="index">{{val.nickname}}</span> </p>
-                    </div>
-                </div>
-                <div class="price">
-                    <em>￥{{order_info.course.underlined_price}}</em><strong>￥{{order_info.course.price}}</strong>
                 </div>
             </div>
+            <van-submit-bar button-text="立即购买" @submit="placeOrder" button-type="default" :loading="is_submiting">
+                <div class="bottom-order-info">
+                    <span>共1项，实付款：</span><strong>￥{{order_info.course.price}}</strong>
+                </div>
+            </van-submit-bar>
         </div>
-        <van-submit-bar button-text="立即购买" @submit="placeOrder" button-type="default" :loading="is_submiting">
-            <div class="bottom-order-info">
-                <span>共1项，实付款：</span><strong>￥{{order_info.course.price}}</strong>
-            </div>
-        </van-submit-bar>
+        <MyError v-if="has_err"></MyError>
     </div>
 </template>
 
@@ -56,13 +59,15 @@
         },
         data() {
             return {
-                order_info: {
+                show_content:false, //进入页面不展示，拿到数据展示
+                has_err:false,     //无网络时展示
+                order_info: {       //课程数据
                     course: {},
                     addr: {}
                 },
-                orderAddress: {},
-                use_selectAddr: false,
-                is_submiting:false
+                orderAddress: {},  //地址信息
+                use_selectAddr: false,  //标记用选择的地址还是从服务器传的地址
+                is_submiting: false
             }
         },
         methods: {
@@ -78,13 +83,15 @@
                 }
                 getBuyCourseInfo(params).then(res => {
                     if (res.status === 1) {
+                        this.show_content = true
                         this.order_info = res.data.data;
-                        if(!this.use_selectAddr){
+                        if (!this.use_selectAddr) {
                             this.orderAddress = res.data.data.addr;
                         }
                     }
                 }).catch(err => {
                     this.$toast.fail('网络错误，请稍后重试')
+                    this.has_err = true
                     throw new Error(err)
                 })
             },
@@ -98,20 +105,15 @@
                         goods_type: 'livecourse',
                         goods_amount: this.order_info.course.price
                     }]
-                    
                 }
-                if(this.order_info.course.have_materials === 1){ //有邮寄资料，添加地址
+                if (this.order_info.course.have_materials === 1) { //有邮寄资料，添加地址
                     params.addr_id = this.orderAddress.id;
                 }
                 let vm = this
                 vm.is_submiting = true
                 creadeOrderData(params).then(res => {
-                    if(res.status === 1){
-                        if(res.data.order_sn){
-                            this.$router.push(`/payment/${res.data.order_sn}`)
-                        }else{
-                            this.$toast.fail('订单创建失败，请稍后重试')
-                        }
+                    if (res.status === 1) {
+                        this.$router.push(`/payment/${res.data.order_sn}`)
                     }
                 }).finally(function() {
                     vm.is_submiting = false;
@@ -129,18 +131,18 @@
             } else {
                 next((vm) => {
                     vm.CLEAR_ORDER_PATH();
-                    if (from.name == 'PayMent'){ //从支付页返回时保留原来信息
-                        if(JSON.stringify(vm.order_info.course)=="{}"){
+                    if (from.name == 'PayMent') { //从支付页返回时保留原来信息
+                        if (JSON.stringify(vm.order_info.course) == "{}") {
                             vm.use_selectAddr = false
                             vm.getOrderInfo();
                         }
-                    }else if (from.name == 'EditAddress' || from.name == 'SelectAddress') {
+                    } else if (from.name == 'EditAddress' || from.name == 'SelectAddress') {  //从选择地址返回时保留信息
                         if (!!vm.orderInfoAddr && vm.orderInfoAddr != "{}") {
                             vm.orderAddress = JSON.parse(vm.orderInfoAddr)
                             vm.use_selectAddr = true
                             vm.CLEAR_ORDER_ADDR();
                         }
-                        if(JSON.stringify(vm.order_info.course)=="{}"){
+                        if (JSON.stringify(vm.order_info.course) == "{}") {
                             vm.getOrderInfo();
                         }
                     } else {
@@ -193,7 +195,7 @@
                     }
                     .right {
                         flex: 1 0 auto;
-                        p span{
+                        p span {
                             padding-right: 3px;
                         }
                     }

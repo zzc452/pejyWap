@@ -7,9 +7,9 @@
         <div class="edit-area">
             <div class="top-box">
                 <van-field v-model="receiver" label="收货人" placeholder="请填写收货人姓名" />
-                <van-field v-model="mobile" label="联系方式" placeholder="请填写收货人真实的手机号码" />
-                <van-field v-model="areaInfo" readonly clickable name="area" label="所在地区" placeholder="请选择所在地区" :is-link="true" @click="selectArea" />
-                <van-field v-model="address_info" rows="1" autosize label="详细地址" type="textarea" placeholder="请填写详细地址" />
+                <van-field v-model="mobile" label="联系方式" type="tel" placeholder="请填写收货人真实的手机号码" />
+                <van-field v-model="areaInfo" readonly clickable name="area" label="所在地区" placeholder="请选择所在地区" :is-link="true" @click="showSelectArea" />
+                <van-field v-model="address_info" rows="1" autosize label="详细地址" type="textarea" placeholder="请填写详细地址" clearable />
             </div>
             <div class="set-default">
                 <van-field name="switch" label="设置为默认地址">
@@ -23,7 +23,7 @@
             </div>
         </div>
         <van-popup v-model="show_area" position="bottom">
-            <van-picker show-toolbar :columns="areaList" :loading="loading_area" :columns-placeholder="['请选择', '请选择', '请选择']"   @confirm="confirmArea" @cancel="show_area = false"/>
+            <van-picker ref="areapick" show-toolbar :columns="areaList" value-key="name" :loading="loading_area" :columns-placeholder="['请选择', '请选择', '请选择']" @change="changeArea"  @confirm="confirmArea" @cancel="show_area = false"/>
         </van-popup>
     </div>
 </template>
@@ -43,17 +43,17 @@
             return {
                 receiver: '',
                 mobile: '',
-                province_id: 16,
-                city_id: 244,
-                district_id: 2701,
+                province_id: '',
+                city_id: '',
+                district_id: '',
                 province_data: [{
-                    text: "请选择"
+                    name: "请选择"
                 }],
                 city_data: [{
-                    text: "请选择"
+                    name: "请选择"
                 }],
                 district_data: [{
-                    text: "请选择"
+                    name: "请选择"
                 }],
                 address_id: '',
                 province_info: '',
@@ -64,42 +64,85 @@
                 show_area: false,
                 loading_area: false,
                 is_edite: false, //区分修改地址和添加地址
-                has_saved: false
+                has_saved: false,
+                updates:0,
             }
+        },
+        updated(){
+            this.updates++
         },
         methods: {
             ...mapMutations('order', [
                 'SET_ORDER_ADDR'
             ]),
-            selectArea() {
+            showSelectArea() {
                 this.show_area = true;
-                this.loading_area = false;
                 this.getAreaData(0, 0);
             },
-            confirmArea() {
-                this.$toast("选择区域")
+            changeArea(picker,val,index){  //选择切换地址
+                if(index == 2){
+                    return;
+                }
+                this.getAreaData(val[index].id,index+1)
             },
-            getAreaData(id = 0, level = 0) {
-                getThreeArea(id).then(res => {
-                    if (res.status === 1) {
-                        this.loading_area = false;
-                        for (let i = 0; i < res.data.area.length; i++) {
-                            res.data.area[i].text = res.data.area[i].name
+            confirmArea(val) {  //确定选择地址
+                this.show_area = false;
+                if(this.province_id != val[0].id){
+                    this.province_id = val[0].id
+                    this.province_info = val[0].name
+                }
+                if(this.city_id != val[1].id){
+                    this.city_id = val[1].id
+                    this.city_info = val[1].name
+                }
+                if(this.district_id != val[2].id){
+                    this.district_id = val[2].id
+                    this.district_info = val[2].name
+                }
+            },
+            getAreaData(id = 0, level = 0) {  //获取三联地址信息
+                this.loading_area = true;
+                if(level == 0){
+                     getThreeArea(id).then(res => {
+                        if (res.status === 1) {
+                            this.loading_area = false;
+                            this.formatAreaData(level,res);
+                            let param_id = res.data.area[0].id
+                            this.getAreaData(param_id,1)
                         }
-                        switch (level) {
-                            case 0: // 省
-                                this.province_data = res.data.area
-                                break;
-                            case 1: // 市
-                                this.city_data = res.data.area
-                                break;
-                            case 2: // 区
-                                this.district_data = res.data.area
-                                break;
+                    })
+                }
+                if(level == 1){
+                     getThreeArea(id).then(res => {
+                        if (res.status === 1) {
+                            this.loading_area = false;
+                            this.formatAreaData(level,res);
+                            let param_id = res.data.area[0].id
+                            this.getAreaData(param_id,2)
                         }
-                    }
-                    return res
-                })
+                    })
+                }
+                if(level == 2){
+                     getThreeArea(id).then(res => {
+                        if (res.status === 1) {
+                            this.loading_area = false;
+                            this.formatAreaData(level,res)
+                        }
+                    })
+                }
+            },
+            formatAreaData(level,res){
+                switch (level) {
+                    case 0: // 省
+                        this.province_data = res.data.area
+                        break;
+                    case 1: // 市
+                        this.city_data = res.data.area
+                        break;
+                    case 2: // 区
+                        this.district_data = res.data.area
+                        break;
+                }
             },
             addAddress() { //添加或编辑地址信息
                 if(!this.receiver || this.receiver.length<2){
@@ -111,6 +154,11 @@
                     this.$toast('请输入正确手机号')
                     return;
                 }
+                if(!this.areaInfo){
+                    this.$toast('请选择省市区')
+                    return
+                }
+                
                 if(!this.address_info || this.address_info<1){
                     this.$toast('请输入详细地址')
                     return
@@ -218,6 +266,9 @@
                         this.city_info = res.data.info.city;
                         this.district_info =res.data.info.district;
                         this.address_info = res.data.info.address
+                        this.province_id = res.data.info.province_id
+                        this.city_id = res.data.info.city_id
+                        this.district_id = res.data.info.district_id
                         this.set_default = res.data.info.is_default === 1 ? true : false
                     }
                 }).catch((err) => {
@@ -230,7 +281,7 @@
         },
         beforeRouteLeave(to, from, next) {
             let vm = this
-            if (!vm.has_saved) {
+            if (!vm.has_saved && vm.updates>1) {
                 this.$dialog.confirm({
                         message: '收货信息还未保存，确定返回？',
                     })
@@ -254,7 +305,7 @@
         #public-nav-header {
             .btn-delete {
                 font-size: 13px;
-                color: #666;
+                color: @txtWhite;
                 cursor: pointer;
             }
         }

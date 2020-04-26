@@ -2,45 +2,48 @@
 <template>
     <div id="payment-wrap">
         <MyHeader title="订单支付"></MyHeader>
-        <div class="pay-info-box">
-            <div class="payment-info">
-                <div class="price">
-                    <strong>￥{{order_info.payable_amount}}</strong>
+        <div class="content-box" v-show="show_content">
+            <div class="pay-info-box">
+                <div class="payment-info">
+                    <div class="price">
+                        <strong>￥{{order_info.payable_amount}}</strong>
+                    </div>
+                    <div class="time-down">
+                        支付倒计时：
+                        <van-count-down :time="countdown_time" format=" HH : mm : ss " />
+                    </div>
+                    <p class="pay-order">订单号：{{order_info.order_sn}}</p>
                 </div>
-                <div class="time-down">
-                    支付倒计时：
-                    <van-count-down :time="countdown_time" format=" HH : mm : ss " />
+                <div class="pay-style">
+                    <h6>选择支付方式</h6>
+                    <van-divider :style="{  borderColor: '#ebedf0', margin: '0 0' }" />
+                    <van-radio-group v-model="pay_style">
+                        <van-cell clickable @click="pay_style = '1'">
+                            <div slot="title" class="pay-item">
+                                <img src="../../assets/img/icon_payAli.png" alt="">支付宝
+                            </div>
+                            <template #right-icon>
+                                    <van-radio checked-color="#ff6900" icon-size="16px" name="1" />
+                            </template>
+                        </van-cell>
+                        <van-cell clickable @click="pay_style = '2'">
+                            <div slot="title" class="pay-item">
+                                <img src="../../assets/img/icon_payWechat.png" alt="">微信
+                            </div>
+                            <template #right-icon>
+                                <van-radio checked-color="#ff6900" icon-size="16px" name="2" />
+                            </template>
+                        </van-cell>
+                    
+                    </van-radio-group>
+                    
                 </div>
-                <p class="pay-order">订单号：{{order_info.order_sn}}</p>
             </div>
-            <div class="pay-style">
-                <h6>选择支付方式</h6>
-                <van-divider :style="{  borderColor: '#ebedf0', margin: '0 0' }" />
-                <van-radio-group v-model="pay_style">
-                    <van-cell clickable @click="pay_style = '1'">
-                        <div slot="title" class="pay-item">
-                            <img src="../../assets/img/icon_payAli.png" alt="">支付宝
-                        </div>
-                        <template #right-icon>
-                                <van-radio checked-color="#ff6900" icon-size="16px" name="1" />
-                        </template>
-                    </van-cell>
-                    <van-cell clickable @click="pay_style = '2'">
-                        <div slot="title" class="pay-item">
-                            <img src="../../assets/img/icon_payWechat.png" alt="">微信
-                        </div>
-                        <template #right-icon>
-                            <van-radio checked-color="#ff6900" icon-size="16px" name="2" />
-                        </template>
-                    </van-cell>
-                
-                </van-radio-group>
-                
-            </div>
-        </div>
-        <div class="bottom-btn-box">
-            <MyButton title="立即支付" @click="gotoPay" />
-        </div>     
+            <div class="bottom-btn-box">
+                <MyButton title="立即支付" @click="gotoPay" />
+            </div>   
+        </div> 
+        <MyError v-if="has_err"></MyError> 
     </div>
 </template>
 
@@ -49,9 +52,11 @@
     export default {
         data() {
             return {
+                show_content:false,
+                has_err:false,
                 order_info:{},
                 countdown_time: 0,
-                pay_style: 1
+                pay_style: '1'
             }
         },
         methods:{
@@ -60,9 +65,14 @@
                 if(sn===0 || !!sn){
                     getOrderInfo({order_sn:sn}).then(res=>{
                         if(res.status === 1){
+                            this.show_content = true
                             this.order_info = res.data.info;
                             this.countdown_time = res.data.info.time*1000
                         }
+                    }).catch(err=>{
+                        this.$toast.fail('网络错误，请稍后重试')
+                        this.has_err = true
+                        throw new Error(err)
                     })
                 }
             },

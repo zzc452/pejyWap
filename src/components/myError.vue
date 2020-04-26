@@ -1,27 +1,28 @@
-<!-- 无数据状态 -->
+<!-- 网络错误页面 -->
 <template>
-    <div class="no-data-wrap">
-        <van-empty :image="pic_nodata" :description="txt" />
+    <div class="net-error-wrap">
+        <van-empty image="network" :description="txt" />
     </div>
 </template>
 
 <script>
     export default {
-        name: "NoData",
+        name: "MyError",
         props: {
             txt: {
-                type: String
+                type: String,
+                default:'网络错误，请检查您的网络'
             }
         },
         data() {
             return {
-                pic_nodata: require('@/assets/img/pic_nodata.png')
+                // pic_nodata: require('@/assets/img/pic_nodata.png')
             }
         }
     }
 </script>
-<style lang="less">
-    .no-data-wrap {
+<style scoped lang="less">
+    .net-error-wrap {
         padding-top: .64rem;
         .van-empty {
             padding: .506667rem 0;

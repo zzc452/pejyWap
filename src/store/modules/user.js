@@ -7,40 +7,38 @@ export default {
     namespaced: true,
     state: {
         userInfo: cache.getLocal("userInfo") ? JSON.parse(cache.getLocal("userInfo")) : null,
-        wxLoginStatus:0
+        wxLoginStatus: 0
     },
     mutations: {
         [types.SAVE_USER](state, val) {
             state.userInfo = val;
-            cache.setLocal('userInfo', val);
+            cache.setLocal('userInfo', JSON.stringify(val));
         },
         [types.CLEAR_USER](state) {
             state.userInfo = null;
             cache.removeLocal('userInfo');
         },
-        [types.SET_WXLOGIN_STATUS](state,val) {
+        [types.SET_WXLOGIN_STATUS](state, val) {
             state.wxLoginStatus = val;
             cache.setLocal('wxLoginStatus', val);
         },
     },
     actions: {
         // 登录相关，通过code获取token和用户信息，用户根据自己的需求对接后台
-        loginWxAuth({ commit }, code) {
-            const data = {
+        async loginWxAuth({ commit }, code) {
+            let params = {
                 code: code
             }
-            return new Promise((resolve, reject) => {
-                loginByWxCode(data)
-                    .then(res => {
+            let data
+            await loginByWxCode(params)
+                .then(res => {
+                    data = res
+                    if (res.status === 1) {
                         // 存用户信息，token
                         commit('SAVE_USER', res.data.data);
-                        commit('SET_LOGIN_STATUS', 2)
-                        resolve(res)
-                    })
-                    .catch(error => {
-                        reject(error)
-                    })
-            })
+                    }
+                })
+            return data;
         },
         // 设置微信登录状态
         setWxLoginStatus({ commit }, query) {

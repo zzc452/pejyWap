@@ -25,7 +25,7 @@
                     </div>
                     <div class="right-box">
                         <em class="playing" v-if="val.live_status === 1"></em>
-                        <span :class="['grey',{'orange':val.buy_status === 2 || val.live_status === 1},{'blue':val.buy_status === 3}]">{{ val.buy_status | btnText(courseType)}}</span>
+                        <span :class="['red',{'orange':val.buy_status === 2 || val.live_status === 1},{'blue':val.buy_status === 3}]">{{ val.buy_status | btnText(courseType)}}</span>
                     </div>
                 </div>
                 <van-divider :style="{ borderColor: '#eeeeee', padding: '0' }"></van-divider>
@@ -192,14 +192,17 @@
                     span {
                         display: inline-block;
                         padding: 0 .506667rem;
-                        height: 1.066667rem;
-                        line-height: 1.066667rem;
+                        height: .96rem;
+                        line-height: .96rem;
                         font-size: 14px;
                         color: @txtWhite;
-                        border-radius: .533333rem;
+                        border-radius: 5px;
                         vertical-align: middle;
                         &.grey {
                             background: @gradualGrey;
+                        }
+                        &.red {
+                            background: @gradualRed;
                         }
                         &.orange {
                             background: @gradualOrange;

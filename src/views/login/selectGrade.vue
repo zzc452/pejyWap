@@ -29,23 +29,25 @@
     import {
         bindGrade
     } from "@/api/login"
-    import { getCourseSetting } from "@/api/course"
+    import {
+        getCourseSetting
+    } from "@/api/course"
     export default {
-        name:'SelectGrade',
+        name: 'SelectGrade',
         data() {
             return {
                 columns: [],
                 username: '',
                 gradeId: '',
                 isSubmiting: false,
-                defaultIndex:1 //picker默认值
+                defaultIndex: 1 //picker默认值
             }
         },
         methods: {
             onChange(picker, value) {
                 this.gradeId = value.id;
             },
-            skipNext(){
+            skipNext() {
                 this.$router.push(decodeURI(this.$store.getters.loginToPath));
             },
             submitGrade() {
@@ -53,43 +55,42 @@
                     this.$toast('请输入姓名')
                     return
                 }
-                let uid = this.$store.getters.userInfo && this.$store.getters.userInfo.id ? this.$store.getters.userInfo.id:'';
-                if(!uid){
+                let uid = this.$store.getters.userInfo && this.$store.getters.userInfo.id ? this.$store.getters.userInfo.id : '';
+                if (!uid) {
                     this.$toast('请登录后绑定');
+                    this.$store.commit('user/CLEAR_USER');
                     let vm = this;
-                    setTimeout(()=>{
+                    setTimeout(() => {
                         vm.$router.push('/login');
-                    },1E3)
+                    }, 1E3)
                     return;
                 }
                 let params = {
                     attr_id: this.gradeId,
-                    id:uid,
+                    id: uid,
                     nickname: this.username,
                 }
                 let vm = this;
                 this.isSubmiting = true;
                 bindGrade(params).then(res => {
-                    if(res.status == 1){
+                    if (res.status == 1) {
                         this.$toast('提交成功，开始学习之旅');
                         setTimeout(() => {
                             vm.$router.push(decodeURI(this.$store.getters.loginToPath));
                         }, 1E3);
-                    }else{
-                        this.$toast(res.message);
                     }
                 }).catch(err => {
                     this.$toast('网络错误，请稍后重试')
                     throw new Error(err);
-                }).finally(function () {
+                }).finally(function() {
                     vm.isSubmiting = false;
                 })
             },
-            getAllGrade(){
+            getAllGrade() {
                 let params = 'grade'
-                getCourseSetting(params).then(res=>{
-                    if(res.status === 1){
-                        for(let i = 0;i<res.data.data.length;i++){
+                getCourseSetting(params).then(res => {
+                    if (res.status === 1) {
+                        for (let i = 0; i < res.data.data.length; i++) {
                             res.data.data[i].text = res.data.data[i].name
                         }
                         this.columns = res.data.data;
@@ -98,13 +99,13 @@
                 })
             }
         },
-        created(){
+        created() {
             this.getAllGrade();
         }
     }
 </script>
 <style lang="less">
-    @imgUrl:'../../assets/img/';
+    @imgUrl: '../../assets/img/';
     #select-grade-wrap {
         background: url("@{imgUrl}bg_selectGrade.png") 0 0 no-repeat;
         background-size: 100% auto;
@@ -118,8 +119,34 @@
         }
         .select-body {
             padding: 0 .6rem;
+            .van-picker__frame::after {
+                position: absolute;
+                box-sizing: border-box;
+                content: ' ';
+                pointer-events: none;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                border: 0;
+                border-bottom: 1px solid #333;
+                top: auto;
+                transform: scaleY(.5);
+            }
+            .van-picker__frame::before {
+                position: absolute;
+                box-sizing: border-box;
+                content: ' ';
+                pointer-events: none;
+                right: 0;
+                top: 0;
+                left: 0;
+                border-bottom: 1px solid #333;
+                transform: scaleY(.5);
+                opacity: 0.7;
+            }
             .top-txt {
                 color: @txtWhite;
+                margin-bottom: .426667rem;
                 h4 {
                     font-size: 24px;
                     line-height: 1.2em;
@@ -164,11 +191,15 @@
                         padding: 0;
                         height: 42px;
                         line-height: 42px;
-                        border-bottom: 1px solid #333333;
                         margin-bottom: .56rem;
                         input {
                             font-size: 14px;
                             color: #333;
+                        }
+                        &:not(:last-child)::after {
+                            border-color: #333333;
+                            left: 0;
+                            right: 0;
                         }
                     }
                     .van-button {

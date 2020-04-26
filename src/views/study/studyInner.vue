@@ -3,8 +3,7 @@
     <div id="study-inner-wrap">
         <van-notice-bar v-if="today_course===1" wrapable :scrollable="false">提示：今日有课</van-notice-bar>
         <van-list v-model="load_moreing" :finished="load_finished" :finished-text="finished_text" @load="loadMore" :immediate-check="false">
-            <Studyitem v-if="course_data.length>0" :course="course_data"></Studyitem>
-            <NoData v-else txt="暂时没有课程"></NoData>
+            <Studyitem :course="course_data" v-show="show_course"></Studyitem>
         </van-list>
     </div>
 </template>
@@ -14,12 +13,10 @@
         getStudyCourse
     } from "@/api/study"
     import Studyitem from "./com/Studyitem"
-    import NoData from "./com/noData"
     export default {
         name: 'StudyInner',
         components: {
-            Studyitem,
-            NoData
+            Studyitem
         },
         data() {
             return {
@@ -29,12 +26,18 @@
                 limit: 5, //每页请求条数
                 course_data: [],
                 current_page: 1,
-                today_course: 2
+                today_course: 2,
+                show_course:false
             }
         },
         computed: {},
         methods: {
             gatCourseData(page = 1) {
+                if (page == 1) {
+                    this.show_course = false
+                    this.finished_text = ''
+                    this.course_data = [];
+                }
                 let params = {
                     type: this.$parent.pathType,
                     status: this.$parent.pathStatus,
@@ -59,9 +62,13 @@
                             vm.load_finished = false
                         }
                     }
+                }).finally(() => {
+                    vm.show_course = true;
+                    vm.load_moreing = false;
                 })
             },
             loadMore() {
+                this.load_moreing = true;
                 this.gatCourseData(this.current_page++);
             }
         },

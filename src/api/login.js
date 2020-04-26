@@ -33,7 +33,6 @@ export function passRepassword (params) {
 	return fetch({
 		url: '/api/reset/password',
 		method: 'post',
-		noToken:true,
 		data: params
 	})
 }
@@ -52,7 +51,6 @@ export function bindGrade (params) {
 	return fetch({
 		url: '/api/user/grade',
 		method: 'post',
-		noToken:true,
 		data: params
 	})
 }

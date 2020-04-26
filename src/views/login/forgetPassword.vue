@@ -6,24 +6,16 @@
     <div class="inner-box">
       <van-form validate-first @submit="resetPassword">
         <div class="input-wrap">
-          <div class="input-box borderBottom">
-            <van-field v-model="mobile" name="mobile" placeholder="请输入手机号" maxlength="11" type="number" />
-          </div>
-          <div class="input-box code-box">
-            <div class="left-area borderBottom">
-              <van-field v-model="code" name="code" placeholder="请输入验证码" maxlength="4" type="number"></van-field>
-            </div>
-            <div class="right-area">
+          <van-field v-model="mobile" name="mobile" placeholder="请输入手机号" maxlength="11" type="tel" />
+          <van-field v-model="code" name="code" placeholder="请输入验证码" maxlength="4" type="number">
+            <div slot="button" class="right-area">
               <span @click="getCode" v-show="!is_countDown">获取验证码</span>
               <van-count-down v-show="is_countDown" :auto-start="false" ref="countDown" :time="countdown_time" format="ss 秒" @finish="countDownFinish" />
             </div>
-          </div>
-          <div class="input-box borderBottom">
-            <van-field v-model="password" name="password" placeholder="请设置您的密码（6-16数字或字母）" maxlength="16" />
-          </div>
-          <div class="input-box borderBottom">
-            <van-field v-model="repassword" name="repassword" placeholder="请再次输入密码" maxlength="16" />
-          </div>
+          </van-field>
+          <van-field v-model="password" name="password" placeholder="请设置您的密码（6-16数字或字母）" maxlength="16" type="password" />
+          <van-field v-model="repassword" name="repassword" placeholder="请再次输入密码" maxlength="16" type="password" />
+          <div></div>
         </div>
         <LoginBtn :can_submie="true" :isLogining="this.isLogining" title="确定"></LoginBtn>
       </van-form>
@@ -108,7 +100,7 @@
           return;
         }
         this.isLogining = true;
-        if (this.test) {
+        if (this.test) { //本地测试跳转效果
           this.$toast("重置成功，跳转登录")
           setTimeout(function() {
             vm.$router.push({
@@ -117,7 +109,7 @@
                 type: 'accountlogin'
               }
             })
-          }, 2E3)
+          }, 1E3)
         } else {
           let params = {
             mobile: this.mobile,
@@ -136,9 +128,7 @@
                       type: 'accountlogin'
                     }
                   })
-                }, 2E3)
-              } else {
-                this.$toast(res.message)
+                }, 1E3)
               }
             })
             .catch(err => {
@@ -164,25 +154,34 @@
 </script>
 <style lang="less">
   #find-password-wrap {
-    padding-top: 0.32rem;
+    #public-nav-header{
+      .van-nav-bar{
+        background:@bgGrey;
+        .van-icon{
+          color: @txt2Black;
+        }
+        .van-nav-bar__title{
+          color: @txt2Black;
+        }
+        .van-hairline--bottom::after{
+          border-color: #E0E0E0;
+        }
+      }
+    }
     .inner-box {
       padding: 0.826667rem 1rem 0;
       .input-wrap {
         margin-bottom: 2.24rem;
-        .borderBottom {
-          border-bottom: 1px solid #c6c6c6;
-        }
         .van-cell {
-          padding: 15px 0;
+          padding: 14px 0;
           input {
             font-size: 17px;
             color: #000;
           }
-        }
-        .code-box {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+          &:not(:last-child)::after {
+            left: 0;
+            right: 0;
+          }
           .right-area {
             width: 98px;
             text-align: center;

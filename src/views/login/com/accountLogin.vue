@@ -2,17 +2,13 @@
 <template>
     <div id="account-login">
         <van-form validate-first @submit="beginLogin">
-            <div class="input-box borderBottom">
-                <van-field v-model="mobile" placeholder="请输入手机号" maxlength="11" type="number" />
-                <span class="btn-clear" @click="clearPhone" v-show="show_btnClaer"></span>
-            </div>
-            <div class="input-box borderBottom">
-                <van-field v-model="password" name="code" placeholder="请输入密码" :type="passwordTotext? 'text' : 'password'" />
-                <span :class="[{'show-eye':passwordTotext},'btn-showpassword']" @click="showPassword"></span>
-            </div>
+            <van-field v-model="mobile" placeholder="请输入手机号" maxlength="11" type="tel" clearable/>
+            <van-field v-model="password" name="code" placeholder="请输入密码" :type="passwordTotext? 'text' : 'password'">
+                <span slot="right-icon" :class="[{'show-eye':passwordTotext},'btn-showpassword']" @click="showPassword"></span>
+            </van-field>
             <div class="link-box">
-                <van-cell title="" value="忘记密码" url="/forgotpassword" />
-                <van-cell @click="$emit('changeLogin')" title="" value="切换验证码登录" is-link />
+                <van-cell :border="false" value="忘记密码" url="/forgotpassword" />
+                <van-cell :border="false" @click="$emit('changeLogin')" value="切换验证码登录" is-link />
             </div>
             <LoginBtn :can_submie="this.can_submie" :isLogining="this.isLogining"></LoginBtn>
         </van-form>
@@ -42,15 +38,7 @@
                 return this.mobile.length > 0 && this.password.length > 0;
             }
         },
-        watch: {
-            mobile(val) {
-                this.show_btnClaer = val.length > 0;
-            }
-        },
         methods: {
-            clearPhone() {
-                this.mobile = '';
-            },
             showPassword() {
                 this.passwordTotext = !this.passwordTotext;
             },
@@ -90,26 +78,19 @@
 </script>
 <style lang="less">
     #account-login {
-        padding-top: .32rem;
-        .borderBottom {
-            border-bottom: 1px solid #C6C6C6;
-            position: relative;
-            .btn-clear {
-                position: absolute;
+        padding-top: .426667rem;
+        .van-cell {
+            padding: 14px 0;
+            input {
+                font-size: 17px;
+                color: #000;
+            }
+            &:not(:last-child)::after {
+                left: 0;
                 right: 0;
-                top: 50%;
-                transform: translateY(-50%);
-                width: .453333rem;
-                height: .453333rem;
-                background: url("../../../assets/img/icon_clear.png") 0 0 no-repeat;
-                background-size: 100% 100%;
-                cursor: pointer;
             }
             .btn-showpassword {
-                position: absolute;
-                right: 0;
-                top: 50%;
-                transform: translateY(-50%);
+                display: inline-block;
                 width: .426667rem;
                 height: .266667rem;
                 background: url("../../../assets/img/icon_eye1.png") 0 0 no-repeat;
@@ -121,23 +102,19 @@
                 }
             }
         }
-        .van-cell {
-            padding: 15px 0;
-            input {
-                font-size: 17px;
-                color: #000;
-            }
-        }
         .link-box {
-            padding: .853333rem 0 1.066667rem;
+            padding: 10px 0 1.066667rem;
+            height: 50px;
             display: flex;
             justify-content: space-between;
+            align-items: flex-end;
             div {
                 flex: 0 1 auto;
                 font-size: 13px;
                 color: #666666;
                 padding: 0;
                 width: auto;
+                align-items: center;
             }
             .van-cell--clickable:active {
                 background: none;

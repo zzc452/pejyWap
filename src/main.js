@@ -26,9 +26,13 @@ wechatAuth.setAppId(process.env.VUE_APP_WECHAT_APPID)
 import myHeader from '@/components/myHeader'
 import myButton from '@/components/myButton'
 import myMainnav from '@/components/myMainnva'
+import myEmpty from '@/components/myEmpty'
+import myError from '@/components/myError'
 Vue.component('MyHeader', myHeader)
 Vue.component('MyButton', myButton)
 Vue.component('MyMainnav', myMainnav)
+Vue.component('MyEmpty', myEmpty)
+Vue.component('MyError', myError)
 
 // 自定义全局过滤器
 import * as filters from '@/utils/filters.js'
@@ -37,49 +41,53 @@ Object.keys(filters).forEach(key => {
 })
 
 //  登录检测
-router.beforeEach(async(to, from, next) => {
+router.beforeEach((to, from, next) => {
   let isgoLogin = /^(\/login)\/?[^\w]*/.test(to.path);
   if (store.getters.token) {
-    if (isgoLogin){
+    if (isgoLogin) {
       next("/home");
-    }else{
+    } else {
       next();
     }
-  }else{
-    if(store.state.path.isWeChat){
-      const  wxStatus  = Number(store.getters.wxLoginStatus)
-      if(wxStatus == 1){
-          try {
-            wechatAuth.returnFromWechat(to.fullPath)
-            const code = wechatAuth.code
-            console.log('code==', code)
-            // 通过code换取token
-            // let loginResult = await store.dispatch('user/loginWxAuth', code)
-            // if(loginResult.data.data.info.mobile==""){//是否要绑定手机
-            //   next();
-            // }
-            // if(loginResult.data.data.info.selectgrade==0){//是否要绑定年级
-            //   next('/selectgrade');
-            // }
-            next(`/${store.getters.loginToPath}`)
-            await store.dispatch('user/setWxLoginStatus', 2)
-            next()
-          } catch (err) {
-            await store.dispatch('user/setWxLoginStatus', 0)
-            next('/error')
+  } else {
+    if (store.state.path.isWeChat) {
+      const wxStatus = Number(store.getters.wxLoginStatus)
+      if (wxStatus === 1) {
+        try {
+          wechatAuth.returnFromWechat(to.fullPath)
+          console.log('code==', wechatAuth.code)
+        } catch (err) {
+          store.dispatch('user/setWxLoginStatus', 0)
+          next('/login')
+        }
+        store.dispatch('user/loginWxAuth', wechatAuth.code).then((res) => {
+          if (res.status === 1) {
+            store.dispatch('user/setWxLoginStatus', 2)
+            if (res.data.data.bandphone) {
+              next()
+            } else {
+              next(`/${store.getters.loginToPath}`)
+            }
+          } else {
+            store.dispatch('user/setWxLoginStatus', 0)
+            next('/login')
           }
+        }).catch(() => {
+          next('/error')
+        })
+
       }
     }
     if (to.meta.requireLogin) {
-      store.commit('path/SAVE_LOGIN_REDIRECT_PATH',to.fullPath);
+      store.commit('path/SAVE_LOGIN_REDIRECT_PATH', to.fullPath);
       next("/login");
-    }else{
+    } else {
       next();
     }
   }
 })
-router.afterEach((to)=>{
-  if(to.fullPath == decodeURI(store.getters.loginToPath)){
+router.afterEach((to) => {
+  if (to.fullPath == decodeURI(store.getters.loginToPath)) {
     store.commit('path/CLEAR_LOGIN_REDIRECT_PATH');
   }
 })

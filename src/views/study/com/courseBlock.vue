@@ -19,7 +19,7 @@
                 </div>
             </div>
         </div>
-        <van-empty v-else class="custom-image" :image="pic_nodata" description="此日暂无课程" />
+        <MyEmpty v-else txt="此日暂无课程"></MyEmpty>
     </div>
 </template>
 
@@ -28,11 +28,6 @@
         props: {
             course_data: {
                 type: Array
-            }
-        },
-        data() {
-            return {
-                pic_nodata: require('@/assets/img/pic_nodata.png')
             }
         }
     }
@@ -96,22 +91,8 @@
                 }
             }
         }
-        .van-empty {
-            padding: .506667rem 0;
-            .van-empty__image {
-                height: 3.28rem;
-                width: 100%;
-                text-align: center;
-                img {
-                    height: 100%;
-                    width: auto;
-                }
-            }
-            .van-empty__description {
-                font-size: 13px;
-                color: @txtGrey;
-                margin-top: -.213333rem;
-            }
+        .no-data-wrap{
+            padding-top: 0;
         }
     }
 </style>

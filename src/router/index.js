@@ -16,10 +16,12 @@ const PayMent = () => import('../views/pay/payment'); // 地址列表选择
 const StudyList = () => import('../views/study/studyList'); // 我的学习
 const StudyInner = () => import('../views/study/studyInner'); // 我的学习二级页
 const accountSet = () => import('../views/mine/accountSet'); // 个人中心账号设置
+const orderList = () => import('../views/mine/orderList'); // 个人中心账号设置
+const orderInner = () => import('../views/mine/orderInner'); // 个人中心账号设置
 const Login = () => import('../views/login/login'); // 登录
 const BindPhone = () => import('../views/login/bindPhone'); // 绑定手机
 const BindCode = () => import('../views/login/bindCode'); // 绑定手机 验证码
-const ForgotPassword = () => import('../views/login/forgotPassword'); // 找回密码
+const ForgetPassword = () => import('../views/login/forgetPassword'); // 找回密码
 const SelectGrade = () => import('../views/login/selectGrade'); // 绑定年级
 const Agreement = () => import('../views/mine/agreement'); // 用户协议
 const Error = () => import('../views/error/error'); // 404
@@ -45,11 +47,17 @@ const routes = [
     path: '/study',
     name: 'Study',
     component: Study,
+    meta: {
+      requireLogin: true
+    },
   },
   {
     path: '/mine',
     name: 'Mine',
     component: Mine,
+    meta: {
+      keepAlive:true
+    },
   },
   {
     path: '/courselist/:type?',
@@ -156,9 +164,9 @@ const routes = [
     ]
   },
   {
-    path: '/forgotpassword',
-    component: ForgotPassword,
-    name: 'ForgotPassword'
+    path: '/forgetpassword',
+    component: ForgetPassword,
+    name: 'ForgetPassword'
   },
   {
     path: '/agreement',
@@ -168,7 +176,10 @@ const routes = [
   {
     path: '/selectgrade',
     component: SelectGrade,
-    name: 'SelectGrade'
+    name: 'SelectGrade',
+    meta: {
+      requireLogin: true
+    },
   },
   {
     path: '/accountsetting',
@@ -178,6 +189,29 @@ const routes = [
       requireLogin: true
     },
   },
+  {
+    path: '/orderlist',
+    component: orderList,
+    name: 'orderList',
+    meta: {
+      requireLogin: true
+    },
+    children: [
+      {
+        path: 'state/:status?',
+        component: orderInner,
+        name: orderInner,
+        meta: {
+          requireLogin: true
+        },
+      },
+      {
+        path: '*',
+        redirect: '404'
+      }
+    ]
+  },
+  
   {
     path: '/404',
     name: 'Error',

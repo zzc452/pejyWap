@@ -19,6 +19,7 @@
         },
         methods:{
             async goWxLogin(){
+                wechatAuth.setAppId(process.env.VUE_APP_WECHAT_APPID)
                 wechatAuth.redirect_uri = window.location.href.replace(/^(\/login)\/?[^\w]+/,'bindphone');
                 await this.setWxLoginStatus(1);
                 window.location.href = wechatAuth.authUrl

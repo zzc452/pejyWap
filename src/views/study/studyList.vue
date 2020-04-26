@@ -6,7 +6,7 @@
         <div class="study-list-box">
             <div class="top-select-box">
                 <van-sticky offset-top="46">
-                    <van-tabs @click="changeStatus" v-model="study_status" color="#FF6900" line-height="2" line-width="12" title-active-color="#FF6900" title-inactive-color="#000000">
+                    <van-tabs @click="changeStatus" :border="false" v-model="study_status" color="#FF6900" line-height="2" line-width="12" title-active-color="#FF6900" title-inactive-color="#000000">
                         <van-tab title="正在学" name="2"></van-tab>
                         <van-tab title="未开始" name="1"></van-tab>
                         <van-tab title="已结束" name="3"></van-tab>
@@ -57,17 +57,14 @@
         background: @bg2Grey;
         box-sizing: border-box;
         padding-top:46px;
-        #public-nav-header {
-            .van-nav-bar {
-                background: @gradualOrange;
-                .van-nav-bar__title {
-                    color: @txtWhite;
-                }
-                .van-icon{
-                    color:@bgWhite;
-                }
+        .top-select-box{
+            .van-tab--active{
+                font-weight: bold;
             }
+            .van-tabs__nav--line{
+                padding-bottom: 11px;
+            }
+
         }
-        
     }
 </style>

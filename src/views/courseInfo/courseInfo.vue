@@ -4,62 +4,66 @@
         <MyHeader :leftArrow="false">
             <div class="left-box" slot="left"></div>
         </MyHeader>
-        <!-- 课程封面 -->
-        <div class="banner-box">
-            <img :src="course_data.cover_img | formatUrl()" alt="">
-        </div>
-        <!-- 课程介绍 -->
-        <CourseDetail :courseInfo="course_data"></CourseDetail>
-        <div class="under-bar"></div>
-        <PastVideo v-if="course_data.is_free === 2"></PastVideo>
-        <div class="under-bar"></div>
-        <van-tabs v-model="active_tab" scrollspy sticky lazy-render color="#FF6900" line-height="2" line-width="32" title-active-color="#FF6900" title-inactive-color="#000000">
-            <van-tab :title="tab_nav[0]">
-                <div class="tab-teacher-box">
-                    <h6 class="g-tit">老师介绍</h6>
-                    <div v-for="(val,index) in course_data.teacher" :key="index">
-                        <img :src="val.avatar | formatUrl()" alt="">
-                        <p>{{val.nickname}}</p>
-                        <span>{{val.intro}}</span>
+        <div class="content-box" v-show="show_content">
+            <!-- 课程封面 -->
+            <div class="banner-box">
+                <img :src="course_data.cover_img | formatUrl()" alt="">
+            </div>
+            <!-- 课程介绍 -->
+            <CourseDetail :courseInfo="course_data"></CourseDetail>
+            <div class="under-bar"></div>
+            <PastVideo v-if="course_data.is_free === 2"></PastVideo>
+            <div class="under-bar"></div>
+            <van-tabs v-model="active_tab" scrollspy sticky lazy-render color="#FF6900" line-height="2" line-width="32" title-active-color="#FF6900" title-inactive-color="#000000">
+                <van-tab :title="tab_nav[0]">
+                    <div class="tab-teacher-box">
+                        <h6 class="g-tit">老师介绍</h6>
+                        <div v-for="(val,index) in course_data.teacher" :key="index">
+                            <img :src="val.avatar | formatUrl()" alt="">
+                            <p>{{val.nickname}}</p>
+                            <span>{{val.intro}}</span>
+                        </div>
                     </div>
-                </div>
-            </van-tab>
-            <van-tab :title="tab_nav[1]">
-                <div class="tab-course-box">
-                    <h6 class="g-tit">课程详情</h6>
-                    <img v-for="(val,index) in course_data.info" :src="val.src" :key="index" alt="">
-                    <!-- <img src="../../../public/img/course_banner.png" alt=""> -->
-                </div>
-            </van-tab>
-            <van-tab :title="tab_nav[2]">
-                <div class="tab-outline-box">
-                    <van-cell-group :border="false">
-                        <van-cell v-for="(val,index) in course_data.course_item" :key="index">
-                            <div class="outline-item" slot="title">
-                                <!-- <div class="left-area">
-                                    第1-2讲
-                                </div> -->
-                                <div class="middle-area">
-                                    <p>{{val.title}}</p>
-                                    <span>{{val.time}}</span>
+                </van-tab>
+                <van-tab :title="tab_nav[1]">
+                    <div class="tab-course-box">
+                        <h6 class="g-tit">课程详情</h6>
+                        <img v-for="(val,index) in course_data.info" :src="val.src" :key="index" alt="">
+                        <!-- <img src="../../../public/img/course_banner.png" alt=""> -->
+                    </div>
+                </van-tab>
+                <van-tab :title="tab_nav[2]">
+                    <div class="tab-outline-box">
+                        <van-cell-group :border="false">
+                            <van-cell v-for="(val,index) in course_data.course_item" :key="index">
+                                <div class="outline-item" slot="title">
+                                    <!-- <div class="left-area">
+                                            第1-2讲
+                                        </div> -->
+                                    <div class="middle-area">
+                                        <p>{{val.title}}</p>
+                                        <span>{{val.time}}</span>
+                                    </div>
+                                    <div class="right-area">
+                                        <van-button v-if="val.live_status===4" color="#5c8cd3" size="mini">看回放</van-button>
+                                        <span v-else-if="val.live_status===1">未直播</span>
+                                        <van-button v-else-if="val.live_status===2" color="#ff6900" size="mini">直播中</van-button>
+                                        <van-button v-else color="#cccccc" size="mini">回放生成中</van-button>
+                                    </div>
                                 </div>
-                                <div class="right-area">
-                                    <van-button v-if="val.live_status===4" color="#5c8cd3" size="mini">看回放</van-button>
-                                    <span v-else-if="val.live_status===1">未直播</span>
-                                    <van-button v-else-if="val.live_status===2" color="#ff6900" size="mini">直播中</van-button>
-                                    <van-button v-else color="#cccccc" size="mini">回放生成中</van-button>
-                                </div>
-                            </div>
-                        </van-cell>
-                    </van-cell-group>
-                </div>
-            </van-tab>
-        </van-tabs>
+                            </van-cell>
+                        </van-cell-group>
+                    </div>
+                </van-tab>
+            </van-tabs>
+        </div>
         <div class="bottom-btn-box">
             <van-divider :style="{ borderColor: '#eeeeee' }"></van-divider>
             <MyButton v-if="course_data.is_free === 2" title="立即购买" @click="gotoBuy(course_data.id)"></MyButton>
             <MyButton v-else title="立即报名"></MyButton>
         </div>
+        <!-- 错误提示 -->
+        <MyError v-if="has_err"></MyError>
     </div>
 </template>
 
@@ -77,6 +81,8 @@
         },
         data() {
             return {
+                show_content: false,  //进入页面不展示，拿到数据展示
+                has_err:false,   //无网络时展示
                 active_tab: 0,
                 tab_nav: ['老师', '课程', '大纲'],
                 course_data: {}
@@ -98,11 +104,16 @@
                 }
                 getCourseInfo(params).then(res => {
                     if (res.status === 1) {
+                        this.show_content = true
                         this.course_data = res.data.data
                     }
+                }).catch(err=>{
+                    this.$toast.fail('网络错误');
+                    this.has_err = true
+                    throw new Error(err)
                 })
             },
-            gotoBuy(id){
+            gotoBuy(id) {
                 this.$router.push(`/order/${id}`)
             }
         },

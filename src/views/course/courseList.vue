@@ -2,14 +2,14 @@
 <template>
     <div id="course-list-wrap">
         <!-- 公共头 -->
-        <MyHeader :title="header_title" :fixed="true" :border="true">
+        <MyHeader :title="header_title" :fixed="true">
             <div class="btn-select-grade" slot="right" @click="showPopGrade">{{now_gradeName}}</div>
         </MyHeader>
         <!-- 课程列表 -->
         <div class="course-list-box">
             <div class="top-select-box" v-show="subject_show">
                 <van-sticky offset-top="46">
-                    <van-tabs @click="changeSubject" v-model="now_subjectId" color="#5789D2" line-height="2" line-width="32" title-active-color="#5789D2" title-inactive-color="#000000">
+                    <van-tabs @click="changeSubject" v-model="now_subjectId" :border="false" color="#ffffff" line-height="3" line-width="10" title-active-color="#ffffff" title-inactive-color="#ffffff">
                         <van-tab v-for="(value,index) in subjects" :key="index" :title="value.name" :name="value.id"></van-tab>
                     </van-tabs>
                 </van-sticky>
@@ -129,14 +129,15 @@
             font-size: 14px;
             height: 46px;
             line-height: 46px;
-            color: #000000;
+            color: @txtWhite;
             padding-right: 16px;
             background: url("@{imgUrl}icon_selctGrade.png") right center no-repeat;
-            background-size: 8px auto;
+            background-size: 10px auto;
         }
         .course-list-box {
-            padding: 0 .453333rem;
             .top-select-box {
+                padding: 0 .453333rem;
+                background: @gradualOrange;
                 .van-sticky--fixed {
                     padding: 0 0.453333rem;
                     padding-bottom: 0.24rem;
@@ -144,10 +145,14 @@
                 }
                 .van-tabs {
                     z-index: 66;
+                    .van-tabs__wrap{
+                        height: 26px;
+                    }
                     .van-tab {
                         padding: 0;
-                        font-size: 15px;
+                        font-size: 14px;
                         flex: 0 0 auto;
+                        line-height: 14px;
                         flex-basis: auto!important;
                         margin-right: .64rem;
                         &:nth-last-of-type(2) {
@@ -156,6 +161,12 @@
                     }
                     .van-tab--active {
                         font-weight: bold;
+                    }
+                    .van-tabs__nav{
+                        background: none;
+                    }
+                    .van-tabs__nav--line{
+                        padding-bottom: 11px;
                     }
                 }
             }

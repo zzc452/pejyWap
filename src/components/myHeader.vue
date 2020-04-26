@@ -41,12 +41,16 @@
 </script>
 <style lang="less">
     #public-nav-header{
+        .van-nav-bar{
+            background: @gradualOrange;
+        }
         .van-nav-bar__title{
             font-size: 18px;
-            color:@txtBlack;
+            color:@txtWhite;
+            font-weight: bold;
         }
         .van-nav-bar .van-icon{
-            color: #494949;
+            color: @txtWhite;
         }
         .van-nav-bar__arrow{
             font-size: 24px;
