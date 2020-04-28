@@ -58,13 +58,17 @@
                     this.$toast("请输入正确手机号");
                     return;
                 }
-                this.is_countDown = true;
-                this.$refs.countDown.start();
+                
                 let params = {
                     mobile: this.mobile,
                     scene: this.scene
                 };
-                getMobileCode(params).catch(err => {
+                getMobileCode(params).then(res=>{
+                    if(res.status === 1){
+                        this.is_countDown = true;
+                        this.$refs.countDown.start();
+                    }
+                }).catch(err => {
                     this.$toast.fail("网络错误请稍后重试");
                     throw new Error(err);
                 });

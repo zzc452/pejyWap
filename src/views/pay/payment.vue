@@ -20,7 +20,7 @@
                     <van-radio-group v-model="pay_style">
                         <van-cell clickable @click="pay_style = '1'">
                             <div slot="title" class="pay-item">
-                                <img src="../../assets/img/icon_payAli.png" alt="">支付宝
+                                <img src="@/assets/img/icon_payAli.png" alt="">支付宝
                             </div>
                             <template #right-icon>
                                     <van-radio checked-color="#ff6900" icon-size="16px" name="1" />
@@ -28,7 +28,7 @@
                         </van-cell>
                         <van-cell clickable @click="pay_style = '2'">
                             <div slot="title" class="pay-item">
-                                <img src="../../assets/img/icon_payWechat.png" alt="">微信
+                                <img src="@/assets/img/icon_payWechat.png" alt="">微信
                             </div>
                             <template #right-icon>
                                 <van-radio checked-color="#ff6900" icon-size="16px" name="2" />
@@ -41,7 +41,12 @@
             </div>
             <div class="bottom-btn-box">
                 <MyButton title="立即支付" @click="gotoPay" />
-            </div>   
+            </div>
+            <van-overlay :show="guid_browser" @click="guid_browser = false">
+                <div class="guid-pic">
+                    <img src="@/assets/img/guid_browser.png" alt="">
+                </div>
+                </van-overlay>   
         </div> 
         <MyError v-if="has_err"></MyError> 
     </div>
@@ -56,7 +61,8 @@
                 has_err:false,
                 order_info:{},
                 countdown_time: 0,
-                pay_style: '1'
+                pay_style: '1',
+                guid_browser:false
             }
         },
         computed:{
@@ -82,14 +88,38 @@
                 }
             },
             gotoPay(){
-                let params={
-                    order_sn:this.$route.params.sn,
-                    source:'h5',
-                    pay_code:this.payCode
+                if(this.$store.getters.isWechat){ // 微信浏览器
+                    if(this.payCode === 'Alipay'){ 
+                        this.guid_browser = true
+                    }else{
+                        alert('sdk支付')
+                    }
+                }else{ //非微信浏览器
+                    let params={
+                        order_sn:this.$route.params.sn,
+                        source:'h5',
+                        pay_code:this.payCode
+                    }
+                    payOrder(params).then(res=>{
+                        if(this.payCode === 'Alipay'){
+                            this.deleteDom('#alipay');
+                            const div = document.createElement('div');
+                            div.id = 'alipay';
+                            div.innerHTML = res;
+                            document.body.appendChild(div);
+                            document.querySelector('#alipay').children[0].submit();
+                        }else{
+                            console.log(123)
+                        }
+                    })
                 }
-                payOrder(params).then(res=>{
-                    console.log(res)
-                })
+
+                
+            },
+            deleteDom(id){
+                if(document.querySelector(id)){
+                    document.body.removeChild(document.querySelector(id))
+                }
             }
         },
         created() {
@@ -180,6 +210,15 @@
             button {
                 height: 40px;
                 line-height: 40px;
+            }
+        }
+        .guid-pic{
+            position: absolute;
+            right: 0.58rem;
+            width: 6.4rem;
+            top:  0.5rem;
+            img{
+                width: 100%;
             }
         }
     }

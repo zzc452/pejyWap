@@ -38,7 +38,8 @@
         },
         methods:{
             changeStatus(name) { //切换学习阶段
-                this.$router.push(`/studylist/${this.pathType}/studystatus/${name}`)
+                if(name == this.pathStatus) return;
+                this.$router.replace(`/studylist/${this.pathType}/studystatus/${name}`)
             },
         },
         created(){ //根据路由重置学习阶段导航

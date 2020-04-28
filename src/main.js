@@ -16,6 +16,8 @@ Vue.config.productionTip = false
 import Vant from 'vant';
 import 'vant/lib/index.css';
 Vue.use(Vant)
+import { Lazyload } from 'vant';
+Vue.use(Lazyload);
 
 import moment from "moment";
 Vue.prototype.$moment = moment;
@@ -51,7 +53,7 @@ router.beforeEach((to, from, next) => {
       next();
     }
   } else {
-    if (store.state.path.isWeChat) {
+    if (store.getters.isWechat) {
       const wxStatus = Number(store.getters.wxLoginStatus)
       if (wxStatus === 1) {
         try {

@@ -49,14 +49,14 @@
         methods: {
             changeSubject(name) { //切换科目
                 if(name == this.path_subjectId) return;
-                this.$router.push(`/courselist/${this.course_price}/grade/${this.path_gradeId}/subject/${name}`)
+                this.$router.replace(`/courselist/${this.course_price}/grade/${this.path_gradeId}/subject/${name}`)
             },
             showPopGrade() {
                 this.show = true
             },
             changeGrade() { //切换年级
                 if (this.selected_gradeId == this.path_gradeId) return;
-                this.$router.push(`/courselist/${this.course_price}/grade/${this.selected_gradeId}/subject/${this.selected_subjectId}`)
+                this.$router.replace(`/courselist/${this.course_price}/grade/${this.selected_gradeId}/subject/${this.selected_subjectId}`)
             },
             SelectedGrade(id, subject) { //选择年级
                 this.selected_gradeId = id;

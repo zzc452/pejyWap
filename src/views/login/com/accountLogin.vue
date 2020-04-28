@@ -7,7 +7,7 @@
                 <span slot="right-icon" :class="[{'show-eye':passwordTotext},'btn-showpassword']" @click="showPassword"></span>
             </van-field>
             <div class="link-box">
-                <van-cell :border="false" value="忘记密码" url="/forgotpassword" />
+                <van-cell :border="false" value="忘记密码" url="/forgetpassword" />
                 <van-cell :border="false" @click="$emit('changeLogin')" value="切换验证码登录" is-link />
             </div>
             <LoginBtn :can_submie="this.can_submie" :isLogining="this.isLogining"></LoginBtn>

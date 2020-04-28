@@ -27,13 +27,17 @@
             return {
                 isAgree:true,
                 quick_login:true,
-                isWeChat:false
             }
         },
         components: {
             thirdLogin,
             QuickLogin,
             AccountLogin
+        },
+        computed:{
+            isWechat(){
+                return this.$store.getters.isWechat
+            }
         },
         methods: {
             cancelLogin(){
@@ -60,22 +64,7 @@
             ...mapMutations('user', [
                 'SAVE_USER'
             ]),
-            ...mapMutations('path', [
-                'SAVE_BROWSER'
-            ]),
-            whetherEeChat(){
-                let ua = navigator.userAgent.toLowerCase();
-                if (String(ua.match(/MicroMessenger/i)) === 'micromessenger') {
-                    this.isWechat = true;
-                    
-                } else {
-                    this.isWechat = false;
-                }
-                this.SAVE_BROWSER(this.isWechat);
-            },
-        },
-        created(){
-            this.whetherEeChat();
+            
         },
         beforeRouteEnter (to, from, next) {
             if(to.query.type == 'accountlogin'){
@@ -129,8 +118,8 @@
                 overflow: unset;
             }
             .van-checkbox__icon .van-icon{
-                width:.506667rem;
-                height:.506667rem;
+                width:16px;
+                height:16px;
                 background:url('../../assets/img/icon_select1.png') center no-repeat;
                 background-size: contain;
                 border:0;
@@ -142,8 +131,8 @@
                     position: absolute;
                     left: 0;
                     top: 0;
-                    width:.506667rem;
-                    height:.506667rem;
+                    width:16px;
+                    height:16px;
                     background: url('../../assets/img/icon_select1_on.png') center no-repeat;
                     background-size: contain;
                 }

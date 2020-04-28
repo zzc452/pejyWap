@@ -3,7 +3,7 @@
     <div id="study-inner-wrap">
         <van-notice-bar v-if="today_course===1" wrapable :scrollable="false">提示：今日有课</van-notice-bar>
         <van-list v-model="load_moreing" :finished="load_finished" :finished-text="finished_text" @load="loadMore" :immediate-check="false">
-            <Studyitem :course="course_data" v-show="show_course"></Studyitem>
+            <Studyitem :course="course_data" :total="course_total" v-show="show_course"></Studyitem>
         </van-list>
     </div>
 </template>
@@ -27,10 +27,10 @@
                 course_data: [],
                 current_page: 1,
                 today_course: 2,
+                course_total:0,
                 show_course:false
             }
         },
-        computed: {},
         methods: {
             gatCourseData(page = 1) {
                 if (page == 1) {
@@ -48,9 +48,19 @@
                 getStudyCourse(params).then(res => {
                     if (res.status === 1) {
                         vm.current_page = res.data.data.current_page;
+                        
+                        if(this.$parent.pathType == 2){ //付费课
+                            if( res.data.data.total>1){
+                                res.data.data.data.forEach(function(val){
+                                    val.canshow = 2
+                                })
+                            }
+                        }
+                        
                         if (page === 1) {
                             this.course_data = res.data.data.data
                             this.today_course = res.data.data.course_status
+                            this.course_total = res.data.data.total;
                             res.data.data.data.length == 0 ? vm.finished_text = '' : vm.finished_text = '已经到底啦';
                         } else {
                             vm.course_data.push(...res.data.data.data);

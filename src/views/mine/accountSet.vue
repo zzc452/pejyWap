@@ -5,7 +5,7 @@
         <div class="account-body">
             <div class="account-user">
                 <div class="pic"><img :src="avatar | formatUrl()" alt=""></div>
-                <van-field ref="nameInput" v-model="name" maxlength="4" center :readonly="!is_editename" @blur="editeOver"><span v-show="!is_editename" slot="right-icon" class="pen" @click="changeName"></span></van-field>
+                <van-field ref="nameInput" v-model="name" maxlength="4" center :readonly="!is_editename" @blur="editeOver" @click="changeName"><span v-show="!is_editename" slot="right-icon" class="pen" ></span></van-field>
             </div>
             <div class="input-area">
                 <van-field label="性别" v-model="sex.name" center input-align="right" is-link readonly @click="showSetSex" />

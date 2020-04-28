@@ -8,5 +8,6 @@ export const CLEAR_ORDER_PATH = 'CLEAR_ORDER_PATH'        //清除订单跳转�
 export const SET_ORDER_ADDR = 'SET_ORDER_ADDR'        //记录选择订单地址
 export const CLEAR_ORDER_ADDR = 'CLEAR_ORDER_ADDR'        //清除选择订单地址
 export const RESET_PATH = 'RESET_PATH'     //重置路径
-export const SAVE_BROWSER = 'SAVE_BROWSER'     //记录浏览器
 export const SAVE_ACCOUNTINFO = 'SAVE_ACCOUNTINFO'     //记录个人中心账户信息
+export const SAVE_HOTSEARCH = 'SAVE_HOTSEARCH'      //保存热门搜索
+export const SAVE_HISTORYSEARCH = 'SAVE_HISTORYSEARCH'      //保存历史搜索

@@ -62,6 +62,7 @@
                         height: 100%;
                         width: 100%;
                         width: auto;
+                        border-radius: 50%;
                         margin-right: .186667rem;
                     }
                 }

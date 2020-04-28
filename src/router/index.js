@@ -6,6 +6,7 @@ const Home = () => import('../views/home/Home'); // 主页
 const videoCourse = () => import('../views/videoCourse/videoCourse'); // 小视频
 const Study = () => import('../views/study/study'); // 我的学习
 const Mine = () => import('../views/mine/mine'); // 个人中心
+const Search = () => import('../views/home/Search'); 
 const CourseList = () => import('../views/course/courseList'); // 课程列表页
 const CourseInner = () => import('../views/course/courseInner'); // 课程二级页
 const CourseInfo = () => import('../views/courseInfo/courseInfo'); // 课程详情页
@@ -65,6 +66,11 @@ const routes = [
     meta: {
       keepAlive: true
     },
+  },
+  {
+    path: '/search',
+    name: 'Search',
+    component: Search,
   },
   {
     path: '/courselist/:type?',

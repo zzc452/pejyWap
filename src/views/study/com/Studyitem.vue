@@ -9,7 +9,7 @@
                 </div>
                 <van-divider :style="{ borderColor: '#dddddd', margin: '0px' }" />
                 <div class="info-list">
-                    <div v-for="(item,n) in val.course_item" :key="n">
+                    <div v-for="(item,n) in val.course_item" :key="n" v-show="val.canshow?n<val.canshow:true">
                         <div class="info-box">
                             <div class="left">
                                 <h6>{{item.title}}</h6>
@@ -26,7 +26,7 @@
                         <van-divider :style="{ borderColor: '#dddddd', margin: '0px' }" />
                     </div>
                 </div>
-                <div class="footer-box" v-if="val.course_item>2 && course.length>1">
+                <div class="footer-box" v-if="val.course_item>2 && courseType == 2 && total>1" @click="showAll(val.canshow)">
                     展开<i></i>
                 </div>
             </div>
@@ -40,15 +40,25 @@
         props: {
             course: {
                 type: Array
+            },
+            total:{
+                type:Number
             }
         },
-        data() {
-            return {}
+        computed:{
+            courseType(){
+                return this.$route.params.type==2 ? this.$route.params.type:1
+            }
         },
-        //生命周期 - 创建完成（访问当前this实例）
-        created() {},
-        //生命周期 - 挂载完成（访问DOM元素）
-        mounted() {}
+        methods:{
+            showAll(show){
+                if(show==2){
+                    show=''
+                }else{
+                    show=2
+                }
+            }
+        }
     }
 </script>
 <style scoped lang="less">

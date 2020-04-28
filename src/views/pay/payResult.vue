@@ -5,7 +5,7 @@
         <div class="pay-success" >
             <div class="content-box">
                 <div class="title-box van-hairline--bottom">
-                    <img src="../../assets/img/pay_ok.png" alt="">
+                    <img src="@/assets/img/pay_ok.png" alt="">
                     <p>支付完成</p>
                     <strong>-1898.00</strong>
                 </div>
@@ -22,7 +22,7 @@
         <div class="pay-fail" v-show="false">
             <div class="content-box">
                 <div class="tit-box">
-                    <img src="../../assets/img/pay_fail.png" alt="">
+                    <img src="@/assets/img/pay_fail.png" alt="">
                     <h4>支付失败</h4>
                     <p>订单支付失败，原因是余额不足<br/>或者其它原因</p>
                 </div>

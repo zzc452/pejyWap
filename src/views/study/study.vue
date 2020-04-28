@@ -135,7 +135,7 @@
         min-height: 100vh;
         box-sizing: border-box;
         background: @bg2Grey;
-        padding-bottom: 108px;
+        padding-bottom: 100px;
         .calendar-box{
             padding-bottom: .613333rem;
              background: @bgWhite;
@@ -196,7 +196,7 @@
         .bottom-btn-box{
             background: @bg2Grey;
             position: fixed;
-            bottom: 55px;
+            bottom: 50px;
             width: 100%;
             padding: 10px .333333rem;
             display: flex;

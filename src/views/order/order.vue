@@ -218,21 +218,30 @@
             }
         }
         .van-submit-bar__bar {
+            padding: 0 .4rem;
             justify-content: space-between;
             .van-button {
+                width: 2.666667rem;
+                height: 1.066667rem;
+                line-height: 1.066667rem;
+                max-height: 40px;
+                max-width: 110px;
                 font-size: 16px;
                 color: @txtWhite;
+                font-weight: normal;
                 border-radius: 5px;
+                padding: 0;
                 background: @gradualOrange;
             }
         }
         .bottom-order-info {
-            line-height: 48px;
             font-size: 0;
             span {
                 font-size: 13px;
                 color: @txtBlack;
                 vertical-align: bottom;
+                margin-bottom: 4px;
+                display: inline-block;
             }
             strong {
                 font-size: 22px;
